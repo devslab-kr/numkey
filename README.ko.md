@@ -80,6 +80,7 @@ numkey는 그 인풋을 한 번에 끝냅니다:
 | `data-numkey-korean` | 실시간 한글 금액 병기 ("150만") — 아래 참조 |
 | `data-numkey-korean-entry` | 만/억 축약 입력 허용 ("3만5천" → blur → "35,000") — 아래 참조 |
 | `data-numkey-name="amount"` | 정식 값을 전송하는 hidden 인풋 — 아래 참조 |
+| `data-numkey-min` / `data-numkey-max` | 최소/최대 — blur 시에만 적용 (입력 중 간섭 없음) |
 
 ### 로케일 표시 (옵트인)
 
@@ -230,6 +231,7 @@ const [amount, setAmount] = useState('')
 | `separator` | `","` | 표시용 그룹 구분자 |
 | `decimalPoint` | `"."` | 표시용 소수점 (정식 값은 항상 `.`) |
 | `locale` | — | **옵트인**: `Intl`로 `separator`/`decimalPoint` 유도 — `"auto"`(브라우저 언어) 또는 BCP 47 태그. 지정하지 않으면 방문자 브라우저와 무관하게 표시가 고정됩니다 (업무 폼의 기본 요구). 명시한 `separator`/`decimalPoint`가 우선. |
+| `min` / `max` | — | 최소/최대 — blur 시에만 적용. 입력 도중 클램핑하면 min이 10인 필드에 50을 칠 수 없게 되니까요 |
 
 ### Core (순수 함수)
 
@@ -256,10 +258,9 @@ const [amount, setAmount] = useState('')
 
 - 유럽식 포맷도 옵션으로 지원: `{ separator: '.', decimalPoint: ',' }`이면
   `1.234.567,89`로 표시되고 정식 값은 `"1234567.89"`로 유지됩니다.
-- 구분자 바로 뒤에서 백스페이스를 누르면 커서가 구분자를 지나칩니다 (숫자는
-  다음 백스페이스에서 삭제) — 주요 마스킹 라이브러리들과 같은 동작입니다.
-  구분자 건너뛰기 삭제는 로드맵에 있습니다.
-- 로드맵: 구분자 건너뛰기 삭제.
+- 구분자 옆 백스페이스/Delete는 한 번에 인접한 숫자를 지웁니다 (구분자는
+  건너뛰고, 재포맷이 나머지를 처리).
+- 로드맵: 인도식 lakh 그룹핑 (`12,34,567` — 비균일 그룹 크기).
 
 ## License
 

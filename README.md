@@ -82,6 +82,7 @@ it does nothing:
 | `data-numkey-korean` | live Korean amount reading ("150만") — see below |
 | `data-numkey-korean-entry` | accept Korean shorthand entry ("3만5천" → blur → "35,000") — see below |
 | `data-numkey-name="amount"` | hidden input posting the canonical value — see below |
+| `data-numkey-min` / `data-numkey-max` | bounds, applied on blur only (typing is never interrupted) |
 
 ### Locale-aware display (opt-in)
 
@@ -233,6 +234,7 @@ const [amount, setAmount] = useState('')
 | `separator` | `","` | group separator in the display |
 | `decimalPoint` | `"."` | decimal mark in the display (canonical always uses `.`) |
 | `locale` | — | **opt-in**: derive `separator`/`decimalPoint` via `Intl` — `"auto"` (browser language) or a BCP 47 tag. Without it the display is deterministic no matter the visitor's browser, which is what business forms usually need. Explicit `separator`/`decimalPoint` win. |
+| `min` / `max` | — | bounds, applied on blur only — clamping mid-keystroke would make 50 untypeable in a min-10 field |
 
 ### Core (pure functions)
 
@@ -259,10 +261,9 @@ const [amount, setAmount] = useState('')
 
 - European formats work via options: `{ separator: '.', decimalPoint: ',' }`
   displays `1.234.567,89` while the canonical value stays `"1234567.89"`.
-- Backspacing directly over a separator moves the caret past it (the digit
-  is deleted on the next backspace) — the same behavior as the major masking
-  libraries. Smart separator-skipping deletion is on the roadmap.
-- Roadmap: smart separator-skipping deletion.
+- Backspace/Delete next to a group separator deletes the adjacent digit in
+  one keystroke (the separator is skipped, and the reformat handles the rest).
+- Roadmap: Indian lakh grouping (`12,34,567` — non-uniform group sizes).
 
 ## License
 

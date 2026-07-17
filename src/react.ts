@@ -24,18 +24,20 @@ import {
   type CSSProperties,
   type FocusEvent,
   type InputHTMLAttributes,
+  type KeyboardEvent,
   type ReactElement,
   type Ref
 } from 'react'
 import {
   caretIndex,
+  clamp,
   countSignificant,
   finalize,
   format,
   parse,
   type NumkeyOptions
 } from './core'
-import { applyToInput, createRefBinder } from './dom'
+import { adjustDeleteCaret, applyToInput, createRefBinder } from './dom'
 
 export function useNumkey(
   opts?: NumkeyOptions
@@ -50,6 +52,7 @@ type OverriddenHandlers =
   | 'defaultValue'
   | 'onChange'
   | 'onBlur'
+  | 'onKeyDown'
   | 'onCompositionStart'
   | 'onCompositionEnd'
 
@@ -65,6 +68,7 @@ export type NumkeyInputProps = {
   onValueChange?: (canonical: string) => void
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void
   onCompositionStart?: (e: CompositionEvent<HTMLInputElement>) => void
   onCompositionEnd?: (e: CompositionEvent<HTMLInputElement>) => void
 } & Omit<InputHTMLAttributes<HTMLInputElement>, OverriddenHandlers>
@@ -92,6 +96,7 @@ export const NumkeyInput = forwardRef(function NumkeyInput(
     onValueChange,
     onChange,
     onBlur,
+    onKeyDown,
     onCompositionStart,
     onCompositionEnd,
     style,
@@ -141,9 +146,13 @@ export const NumkeyInput = forwardRef(function NumkeyInput(
       onValueChange?.(parse(e.currentTarget.value, opts))
       onChange?.(e)
     },
+    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => {
+      if (!composing.current) adjustDeleteCaret(e.currentTarget, e.key, opts)
+      onKeyDown?.(e)
+    },
     onBlur: (e: FocusEvent<HTMLInputElement>) => {
       const el = e.currentTarget
-      const canonical = finalize(parse(el.value, opts))
+      const canonical = clamp(finalize(parse(el.value, opts)), opts)
       const display = format(canonical, opts)
       if (display !== el.value) {
         setValueNative(el, display)

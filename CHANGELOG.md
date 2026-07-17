@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.0 (2026-07-17)
+
+- **Smart deletion** — Backspace/Delete next to a group separator now takes
+  out the adjacent digit in one keystroke instead of bouncing off the
+  separator. Automatic in the DOM layer and both components; also exported
+  as `adjustDeleteCaret(el, key, opts?)` for custom wiring. / 구분자 옆
+  백스페이스/Delete가 한 번에 숫자를 지웁니다 (기존: 두 번).
+- **`min` / `max`** (`data-numkey-min` / `data-numkey-max`) — bounds applied
+  on blur only, never mid-keystroke (you can still type 50 in a min-10
+  field). Applies to Korean shorthand too (`1.5억` with max 100만 → 100만).
+  Exported as `clamp(canonical, opts?)`. / blur 시에만 적용되는 최소/최대 —
+  입력 도중에는 간섭하지 않습니다.
+
 ## 0.3.0 (2026-07-17)
 
 - **`fromKorean(text)`** — Korean-shorthand amount parsing, the inverse of

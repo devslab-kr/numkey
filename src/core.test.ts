@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   caretIndex,
+  clamp,
   countSignificant,
   finalize,
   format,
@@ -137,6 +138,29 @@ describe('finalize — settle transient states', () => {
     expect(finalize('-')).toBe('')
     expect(finalize('1234.5')).toBe('1234.5')
     expect(finalize('')).toBe('')
+  })
+})
+
+describe('clamp — min/max on settled values', () => {
+  it('clamps to the bounds and returns them canonically', () => {
+    expect(clamp('5', { min: 10 })).toBe('10')
+    expect(clamp('500', { max: 100 })).toBe('100')
+    expect(clamp('50', { min: 10, max: 100 })).toBe('50')
+    expect(clamp('-5', { negative: true, min: 0 })).toBe('0')
+  })
+
+  it('accepts string bounds and decimal values', () => {
+    expect(clamp('99.99', { decimals: 2, max: '50.5' })).toBe('50.5')
+  })
+
+  it('passes transient and empty states through untouched', () => {
+    expect(clamp('', { min: 10 })).toBe('')
+    expect(clamp('-', { negative: true, min: 10 })).toBe('-')
+    expect(clamp('123.', { decimals: 2, min: 500 })).toBe('123.')
+  })
+
+  it('without bounds it is the identity', () => {
+    expect(clamp('123456789')).toBe('123456789')
   })
 })
 

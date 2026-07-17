@@ -17,8 +17,8 @@
  *   <NumkeyInput v-model="amount" :decimals="2" negative />
  */
 import { defineComponent, h, type Directive, type PropType } from 'vue'
-import { finalize, format, parse, type NumkeyOptions } from './core'
-import { applyToInput, bind, finalizeInput } from './dom'
+import { clamp, finalize, format, parse, type NumkeyOptions } from './core'
+import { adjustDeleteCaret, applyToInput, bind, finalizeInput } from './dom'
 
 type DirectiveValue = NumkeyOptions | number | undefined
 
@@ -91,11 +91,16 @@ export const NumkeyInput = defineComponent({
         onInput: (e: Event) => {
           if (!composing) formatAndEmit(e)
         },
+        onKeydown: (e: KeyboardEvent) => {
+          if (!composing) {
+            adjustDeleteCaret(e.target as HTMLInputElement, e.key, opts())
+          }
+        },
         onBlur: (e: Event) => {
           const el = e.target as HTMLInputElement
           const o = opts()
           finalizeInput(el, o)
-          emit('update:modelValue', finalize(parse(el.value, o)))
+          emit('update:modelValue', clamp(finalize(parse(el.value, o)), o))
         }
       })
   }
