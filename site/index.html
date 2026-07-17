@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>numkey — numeric input formatting demo</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 3rem auto; padding: 0 1rem; }
+  label { display: block; margin: 1.25rem 0 0.25rem; font-weight: 600; }
+  input { font-size: 1.1rem; padding: 0.4rem 0.6rem; width: 16rem; }
+  code { background: #f4f4f4; padding: 0.1rem 0.3rem; border-radius: 3px; }
+  .canonical { color: #666; font-size: 0.9rem; margin-top: 0.25rem; }
+</style>
+</head>
+<body>
+<h1>numkey</h1>
+<p>One script tag. Markup attributes. No build step.</p>
+
+<label>Integer <code>data-numkey</code></label>
+<input id="int" data-numkey value="1234567">
+
+<label>2 decimals <code>data-numkey="2"</code></label>
+<input id="dec" data-numkey="2">
+
+<label>Negative <code>data-numkey data-numkey-negative</code></label>
+<input id="neg" data-numkey data-numkey-negative>
+
+<p class="canonical">Canonical value of the first field: <code id="out">?</code></p>
+
+<script src="../dist/numkey.global.js"></script>
+<script>
+  const int = document.getElementById('int')
+  const out = document.getElementById('out')
+  const sync = () => { out.textContent = JSON.stringify(numkey.getValue(int)) }
+  int.addEventListener('input', sync)
+  sync()
+</script>
+</body>
+</html>

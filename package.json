@@ -1,0 +1,104 @@
+{
+  "name": "@devslab/numkey",
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Numeric input formatting — live thousands grouping, caret-safe editing, leading-zero cleanup, right alignment. String-first (money-safe), zero-dependency, works with plain <script>, Vue, and React.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/numkey.global.js",
+  "jsdelivr": "./dist/numkey.global.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./vue": {
+      "types": "./dist/vue.d.ts",
+      "import": "./dist/vue.js",
+      "require": "./dist/vue.cjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run typecheck && npm run test && npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "vue": "^3.3.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "jsdom": "^26.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.9",
+    "vue": "^3.5.13"
+  },
+  "keywords": [
+    "number",
+    "input",
+    "format",
+    "number-format",
+    "numeric-input",
+    "thousands-separator",
+    "comma",
+    "currency",
+    "money",
+    "amount",
+    "mask",
+    "input-mask",
+    "caret",
+    "leading-zero",
+    "right-align",
+    "autonumeric",
+    "cleave",
+    "숫자",
+    "금액",
+    "콤마",
+    "천단위",
+    "세자리",
+    "숫자입력",
+    "vue",
+    "react",
+    "vanilla",
+    "no-build",
+    "cdn",
+    "jsp",
+    "php"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devslab-kr/numkey.git"
+  },
+  "homepage": "https://github.com/devslab-kr/numkey#readme",
+  "bugs": {
+    "url": "https://github.com/devslab-kr/numkey/issues"
+  },
+  "author": "devslab <jlc488@gmail.com>",
+  "license": "MIT"
+}
