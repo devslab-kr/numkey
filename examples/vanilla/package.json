@@ -1,0 +1,16 @@
+{
+  "name": "numkey-vanilla-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@devslab/numkey": "^0.4.0"
+  },
+  "devDependencies": {
+    "vite": "^8.0.16"
+  }
+}

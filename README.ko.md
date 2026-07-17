@@ -1,6 +1,8 @@
 # numkey
 
-[English](README.md) | **한국어** · [라이브 데모](https://devslab-kr.github.io/numkey/)
+[English](README.md) | **한국어** · [📺 라이브 데모](https://devslab-kr.github.io/numkey/)
+
+바로 실행해보기: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla) · [Vue](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vue) · [React](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/react) | [📦 CodeSandbox](https://codesandbox.io/s/github/devslab-kr/numkey/tree/main/examples/vanilla)
 
 [![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
 [![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
