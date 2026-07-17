@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.0 (2026-07-17)
+
+The Korean release. / 한국 특화 릴리스.
+
+- **`toKorean(canonical)`** — mixed digits-plus-units amount reading:
+  `'1500000'` → `"150만"`, `'927483041001'` → `"9,274억 8,304만 1,001"`.
+  Zero groups omitted, per-group comma grouping, sign kept, fraction
+  ignored, units up to 양 (10^28). / 한글 금액 읽기 — 은행·핀테크 UI의
+  "150만" 병기를 함수 하나로.
+- **`data-numkey-korean`** — live reading next to the input: empty value
+  generates a `<span class="numkey-korean">` after the field (style it
+  yourself; add "원" via CSS `::after`), or pass a CSS selector to use an
+  existing element. / 인풋 옆 실시간 한글 병기 — 마크업만으로.
+- **`data-numkey-name="amount"`** — generated hidden input that always
+  carries the settled CANONICAL value, so a classic form POST submits
+  `1234567` while the field shows `1,234,567`. No server-side comma
+  stripping needed. / 클래식 폼 전송용 hidden 정식 값 동기화 — JSP/PHP
+  폼에서 서버측 콤마 제거가 필요 없어집니다.
+
 ## 0.1.0 (2026-07-17)
 
 Initial release. / 최초 릴리스.

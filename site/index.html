@@ -51,6 +51,8 @@
   }
   .canonical { font-size: 0.85rem; color: var(--muted); margin-top: 0.35rem; }
   .canonical code { color: var(--accent); }
+  .numkey-korean { margin-left: 0.6rem; color: var(--accent); font-size: 0.95rem; }
+  .numkey-korean:not(:empty)::after { content: " 원"; color: var(--muted); }
   pre {
     background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
     padding: 0.9rem 1rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5;
@@ -88,6 +90,26 @@
 
   <label>Paste sanitizing — try pasting <code>₩ 1,234,567원</code> or full-width <code>１２３４</code></label>
   <input type="text" data-numkey placeholder="paste here">
+</div>
+
+<div class="card">
+  <h2>Korean amount reading <span class="ko">/ 한글 금액 병기 — 은행 UI의 "150만"을 마크업만으로</span></h2>
+
+  <label>Type an amount · <code>&lt;input data-numkey data-numkey-korean&gt;</code></label>
+  <input type="text" data-numkey data-numkey-korean value="1500000">
+  <p style="font-size:0.9rem; margin-bottom:0">
+    The generated <code>&lt;span class="numkey-korean"&gt;</code> is unstyled — the
+    "원" here comes from CSS <code>::after</code>. Also a pure function:
+    <code>toKorean('927483041001')</code> → <code>9,274억 8,304만 1,001</code>.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Form POST, solved <span class="ko">/ 폼 전송은 hidden이 정식 값으로 — 서버 콤마 제거 불필요</span></h2>
+
+  <label><code>&lt;input data-numkey data-numkey-name="amount"&gt;</code></label>
+  <input type="text" id="posted" data-numkey data-numkey-name="amount" value="1234567">
+  <div class="canonical">the hidden input will POST: <code id="posted-out"></code></div>
 </div>
 
 <div class="card">
@@ -158,6 +180,17 @@
     numkey.setValue(locEl, canonical)
     syncLoc()
   })
+
+  // show what the data-numkey-name hidden input will POST — computed via
+  // getValue so it doesn't depend on listener ordering vs numkey's own sync
+  var postedEl = document.getElementById('posted')
+  var postedOut = document.getElementById('posted-out')
+  var syncPosted = function () {
+    postedOut.textContent = 'amount=' + numkey.getValue(postedEl)
+  }
+  postedEl.addEventListener('input', syncPosted)
+  postedEl.addEventListener('blur', syncPosted)
+  syncPosted()
 </script>
 </body>
 </html>
