@@ -1,8 +1,10 @@
 # numkey
 
-[![npm](https://img.shields.io/npm/v/@devslab/numkey)](https://www.npmjs.com/package/@devslab/numkey)
+[English](README.md) | **한국어** · [라이브 데모](https://devslab-kr.github.io/numkey/)
+
+[![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
 [![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/@devslab/numkey)](./LICENSE)
+[![license](https://img.shields.io/npm/l/%40devslab%2Fnumkey)](./LICENSE)
 
 **"문자열인데 숫자야."** 업무 시스템엔 이런 필드가 꼭 있습니다 — 금액, 수량,
 단가. 그리고 매번 같은 걸 손으로 다시 만들죠: 실시간 천 단위 콤마(`10,000`),
@@ -58,6 +60,7 @@ numkey는 그 인풋을 한 번에 끝냅니다:
 | `data-numkey-group="4"` | 그룹 크기 (기본 3, 만 단위는 4) |
 | `data-numkey-separator=" "` | 그룹 구분자 (기본 `,`) |
 | `data-numkey-point=","` | 필드에 표시되는 소수점 (기본 `.`) |
+| `data-numkey-locale="auto"` | 로케일에서 구분자 유도 — `"auto"`(브라우저 언어) 또는 `"de-DE"` 같은 BCP 47 태그 |
 
 > `type="text"` 인풋을 쓰세요. numkey가 `inputmode`를 설정해 모바일에서 숫자
 > 키패드가 뜹니다. `type="number"`는 커서 API가 없어 포맷팅과 충돌합니다.
@@ -121,6 +124,7 @@ const [amount, setAmount] = useState('')
 | `group` | `3` | 그룹당 자릿수 (만 단위 그룹핑은 4) |
 | `separator` | `","` | 표시용 그룹 구분자 |
 | `decimalPoint` | `"."` | 표시용 소수점 (정식 값은 항상 `.`) |
+| `locale` | — | **옵트인**: `Intl`로 `separator`/`decimalPoint` 유도 — `"auto"`(브라우저 언어) 또는 BCP 47 태그. 지정하지 않으면 방문자 브라우저와 무관하게 표시가 고정됩니다 (업무 폼의 기본 요구). 명시한 `separator`/`decimalPoint`가 우선. |
 
 ### Core (순수 함수)
 
@@ -137,6 +141,7 @@ const [amount, setAmount] = useState('')
 | `bind(el, opts?)` | 실시간 포맷팅 연결; 해제 함수 반환 |
 | `observe(root?)` | 현재/미래의 모든 `[data-numkey]` 바인딩 |
 | `getValue(el, opts?)` | 바인딩된 인풋의 정식 값 |
+| `setValue(el, canonical, opts?)` | 정식 값을 포맷된 표시 값으로 기록 |
 | `applyToInput(el, opts?)` | 커서 보존 1회 재포맷 (빌딩 블록) |
 | `createRefBinder(opts?)` | 어떤 프레임워크에서든 쓰는 ref 콜백 팩토리 |
 

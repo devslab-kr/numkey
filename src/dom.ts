@@ -36,6 +36,7 @@ export function optionsFromElement(el: HTMLInputElement): NumkeyOptions {
   const group = el.getAttribute('data-numkey-group')
   const separator = el.getAttribute('data-numkey-separator')
   const decimalPoint = el.getAttribute('data-numkey-point')
+  const locale = el.getAttribute('data-numkey-locale')
   const opts: NumkeyOptions = {
     decimals: main ? parseInt(main, 10) || 0 : 0,
     negative: el.hasAttribute('data-numkey-negative')
@@ -43,6 +44,7 @@ export function optionsFromElement(el: HTMLInputElement): NumkeyOptions {
   if (group) opts.group = parseInt(group, 10) || 3
   if (separator !== null) opts.separator = separator
   if (decimalPoint !== null) opts.decimalPoint = decimalPoint
+  if (locale) opts.locale = locale
   return opts
 }
 
@@ -97,6 +99,21 @@ export function finalizeInput(
 /** The canonical (unformatted, settled) value of a bound input. */
 export function getValue(el: HTMLInputElement, opts?: NumkeyOptions): string {
   return finalize(parse(el.value, opts ?? optionsFromElement(el)))
+}
+
+/**
+ * Set an input from a CANONICAL value ("1234567.89") — the write counterpart
+ * of `getValue`. Use this for programmatic updates (loading a record,
+ * switching display options): assigning a canonical string to `el.value`
+ * directly would show it unformatted, and re-parsing it under a non-`.`
+ * decimal mark would corrupt it.
+ */
+export function setValue(
+  el: HTMLInputElement,
+  canonical: string,
+  opts?: NumkeyOptions
+): void {
+  el.value = format(finalize(canonical), opts ?? optionsFromElement(el))
 }
 
 /**

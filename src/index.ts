@@ -3,6 +3,7 @@ export {
   countSignificant,
   finalize,
   format,
+  localeSeparators,
   parse,
   resolveOptions,
   type NumkeyOptions
@@ -14,5 +15,6 @@ export {
   finalizeInput,
   getValue,
   observe,
-  optionsFromElement
+  optionsFromElement,
+  setValue
 } from './dom'

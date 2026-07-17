@@ -3,3 +3,6 @@ dist/
 coverage/
 *.log
 .DS_Store
+# local demo copies — the Pages workflow assembles fresh ones from dist/
+site/numkey.global.js
+site/numkey.global.js.map
