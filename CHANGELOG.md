@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1 (2026-07-17)
+
+Docs-only republish — no code changes. Runnable `examples/{vanilla,vue,react}`
+and the StackBlitz / CodeSandbox try-online links now appear on the npm page.
+/ 문서 재배포 — 코드 무변경. examples 3종과 원클릭 실행 링크가 npm 페이지에
+반영됩니다.
+
 ## 0.4.0 (2026-07-17)
 
 - **Smart deletion** — Backspace/Delete next to a group separator now takes
