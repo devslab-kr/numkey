@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-07-17)
 
 Initial release. / 최초 릴리스.
 
