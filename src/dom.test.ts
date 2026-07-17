@@ -1,6 +1,13 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest'
-import { applyToInput, bind, getValue, observe, setValue } from './dom'
+import {
+  adjustDeleteCaret,
+  applyToInput,
+  bind,
+  getValue,
+  observe,
+  setValue
+} from './dom'
 
 function makeInput(attrs: Record<string, string> = {}): HTMLInputElement {
   const el = document.createElement('input')
@@ -284,6 +291,77 @@ describe('data-numkey-korean-entry — shorthand entry', () => {
     expect(el.value).toBe('1.5') // protected while it could still become 1.5억
     el.dispatchEvent(new Event('blur'))
     expect(el.value).toBe('1') // integer field: fraction truncated, not "15"
+  })
+})
+
+describe('adjustDeleteCaret — one-keystroke deletion across separators', () => {
+  it('Backspace right after a separator steps past it', () => {
+    const el = makeInput({ 'data-numkey': '' })
+    el.value = '1,234'
+    el.setSelectionRange(2, 2) // "1,|234"
+    adjustDeleteCaret(el, 'Backspace')
+    expect(el.selectionStart).toBe(1) // default action now deletes the 1
+  })
+
+  it('Delete right before a separator steps past it', () => {
+    const el = makeInput({ 'data-numkey': '' })
+    el.value = '1,234'
+    el.setSelectionRange(1, 1) // "1|,234"
+    adjustDeleteCaret(el, 'Delete')
+    expect(el.selectionStart).toBe(2) // default action now deletes the 2
+  })
+
+  it('leaves range selections and non-separator positions alone', () => {
+    const el = makeInput({ 'data-numkey': '' })
+    el.value = '1,234'
+    el.setSelectionRange(0, 3)
+    adjustDeleteCaret(el, 'Backspace')
+    expect(el.selectionStart).toBe(0)
+    expect(el.selectionEnd).toBe(3)
+
+    el.setSelectionRange(4, 4) // "1,23|4" — plain digit behind
+    adjustDeleteCaret(el, 'Backspace')
+    expect(el.selectionStart).toBe(4)
+  })
+
+  it('the bound keydown handler applies it automatically', () => {
+    const el = makeInput({ 'data-numkey': '' })
+    bind(el)
+    el.value = '1,234'
+    el.setSelectionRange(2, 2)
+    el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace' }))
+    expect(el.selectionStart).toBe(1)
+  })
+})
+
+describe('data-numkey-min / data-numkey-max — clamped on blur only', () => {
+  it('does not interfere while typing, clamps on blur', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-min': '10' })
+    bind(el)
+    feed(el, '5') // on the way to 50 — must not be rejected mid-typing
+    expect(el.value).toBe('5')
+    el.dispatchEvent(new Event('blur'))
+    expect(el.value).toBe('10')
+  })
+
+  it('clamps the maximum with grouping intact', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-max': '100000' })
+    bind(el)
+    feed(el, '9999999')
+    el.dispatchEvent(new Event('blur'))
+    expect(el.value).toBe('100,000')
+  })
+
+  it('clamps Korean shorthand on settle too', () => {
+    const el = makeInput({
+      'data-numkey': '',
+      'data-numkey-korean-entry': '',
+      'data-numkey-max': '1000000'
+    })
+    bind(el)
+    feed(el, '1.5억')
+    el.dispatchEvent(new Event('blur'))
+    expect(el.value).toBe('1,000,000')
   })
 })
 

@@ -28,10 +28,12 @@
  */
 import {
   caretIndex,
+  clamp,
   countSignificant,
   finalize,
   format,
   parse,
+  resolveOptions,
   type NumkeyOptions
 } from './core'
 import { fromKorean, KOREAN_NUMBER_CHARS, toKorean } from './korean'
@@ -47,6 +49,8 @@ export function optionsFromElement(el: HTMLInputElement): NumkeyOptions {
   const separator = el.getAttribute('data-numkey-separator')
   const decimalPoint = el.getAttribute('data-numkey-point')
   const locale = el.getAttribute('data-numkey-locale')
+  const min = el.getAttribute('data-numkey-min')
+  const max = el.getAttribute('data-numkey-max')
   const opts: NumkeyOptions = {
     decimals: main ? parseInt(main, 10) || 0 : 0,
     negative: el.hasAttribute('data-numkey-negative'),
@@ -56,6 +60,8 @@ export function optionsFromElement(el: HTMLInputElement): NumkeyOptions {
   if (separator !== null) opts.separator = separator
   if (decimalPoint !== null) opts.decimalPoint = decimalPoint
   if (locale) opts.locale = locale
+  if (min !== null) opts.min = min
+  if (max !== null) opts.max = max
   return opts
 }
 
@@ -96,15 +102,46 @@ export function applyToInput(
   return true
 }
 
-/** Settle transient states and reformat — what blur runs. */
+/** Settle transient states, apply min/max, and reformat — what blur runs. */
 export function finalizeInput(
   el: HTMLInputElement,
   opts?: NumkeyOptions
 ): boolean {
-  const display = format(finalize(parse(el.value, opts)), opts)
+  const display = format(clamp(finalize(parse(el.value, opts)), opts), opts)
   if (display === el.value) return false
   el.value = display
   return true
+}
+
+/**
+ * Caret adjustment that makes Backspace/Delete take out the digit next to a
+ * separator in ONE keystroke. Without it, backspacing at "1,|234" deletes
+ * the comma, the reformat puts it back, and the caret just drifts left —
+ * the digit dies on the second press. Call from keydown BEFORE the default
+ * action: the caret is moved past the separator so the default deletes the
+ * digit, and the input event reformats as usual.
+ */
+export function adjustDeleteCaret(
+  el: HTMLInputElement,
+  key: string,
+  opts?: NumkeyOptions
+): void {
+  if (key !== 'Backspace' && key !== 'Delete') return
+  const o = resolveOptions(opts ?? optionsFromElement(el))
+  if (o.separator.length !== 1) return
+  const start = getCaret(el)
+  let end: number | null = null
+  try {
+    end = el.selectionEnd
+  } catch {
+    /* no selection API */
+  }
+  if (start === null || start !== end) return // range selections delete as-is
+  if (key === 'Backspace' && start > 0 && el.value[start - 1] === o.separator) {
+    setCaret(el, start - 1)
+  } else if (key === 'Delete' && el.value[start] === o.separator) {
+    setCaret(el, start + 1)
+  }
 }
 
 /**
@@ -219,12 +256,11 @@ export function bind(el: HTMLInputElement, opts?: NumkeyOptions): () => void {
 
   const settle = (o: NumkeyOptions): void => {
     if (isKoreanDraftValue(el.value, o)) {
-      el.value = format(constrain(fromKorean(el.value), o), o)
-      syncExtras(o)
+      el.value = format(clamp(constrain(fromKorean(el.value), o), o), o)
     } else {
       finalizeInput(el, o)
-      syncExtras(o)
     }
+    syncExtras(o)
   }
 
   settle(initial) // server-rendered value → formatted display
@@ -250,17 +286,22 @@ export function bind(el: HTMLInputElement, opts?: NumkeyOptions): () => void {
   const onBlur = (): void => {
     settle(resolve())
   }
+  const onKeyDown = (e: KeyboardEvent): void => {
+    if (!composing) adjustDeleteCaret(el, e.key, resolve())
+  }
 
   el.addEventListener('compositionstart', onCompositionStart)
   el.addEventListener('compositionend', onCompositionEnd)
   el.addEventListener('input', onInput)
   el.addEventListener('blur', onBlur)
+  el.addEventListener('keydown', onKeyDown)
 
   const unbind = (): void => {
     el.removeEventListener('compositionstart', onCompositionStart)
     el.removeEventListener('compositionend', onCompositionEnd)
     el.removeEventListener('input', onInput)
     el.removeEventListener('blur', onBlur)
+    el.removeEventListener('keydown', onKeyDown)
     if (koreanCreated) koreanTarget?.remove()
     hidden?.remove()
     unbinders.delete(el)

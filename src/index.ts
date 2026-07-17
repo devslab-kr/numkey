@@ -1,5 +1,6 @@
 export {
   caretIndex,
+  clamp,
   countSignificant,
   finalize,
   format,
@@ -10,6 +11,7 @@ export {
 } from './core'
 export { fromKorean, toKorean, type ToKoreanOptions } from './korean'
 export {
+  adjustDeleteCaret,
   applyToInput,
   bind,
   createRefBinder,

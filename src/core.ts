@@ -36,6 +36,13 @@ export interface NumkeyOptions {
    * `fromKorean` ("3만5천" → "35,000"). Default false.
    */
   koreanEntry?: boolean
+  /**
+   * Lower/upper bounds, applied on blur only — clamping mid-keystroke is
+   * hostile (you cannot type 50 in a min-10 field if 5 gets rejected).
+   * Compared numerically; exact through the IEEE 754 safe-integer range.
+   */
+  min?: string | number
+  max?: string | number
 }
 
 type Resolved = Required<NumkeyOptions>
@@ -90,8 +97,27 @@ export function resolveOptions(opts?: NumkeyOptions): Resolved {
     separator: separator ?? ',',
     decimalPoint: decimalPoint ?? '.',
     locale: opts?.locale ?? '',
-    koreanEntry: opts?.koreanEntry ?? false
+    koreanEntry: opts?.koreanEntry ?? false,
+    min: opts?.min ?? '',
+    max: opts?.max ?? ''
   }
+}
+
+/**
+ * Clamp a settled canonical value to `min`/`max`. Transient states and
+ * empty values pass through untouched; bounds are returned in canonical
+ * form (`clamp('5', { min: 10 })` → `"10"`).
+ */
+export function clamp(canonical: string, opts?: NumkeyOptions): string {
+  if (canonical === '' || canonical === '-' || canonical.endsWith('.')) {
+    return canonical
+  }
+  const o = resolveOptions(opts)
+  const n = Number(canonical)
+  if (Number.isNaN(n)) return canonical
+  if (o.min !== '' && n < Number(o.min)) return String(Number(o.min))
+  if (o.max !== '' && n > Number(o.max)) return String(Number(o.max))
+  return canonical
 }
 
 /** Full-width digits/signs (Korean and Japanese IMEs emit these) → ASCII. */
