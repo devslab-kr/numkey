@@ -102,6 +102,14 @@
     "원" here comes from CSS <code>::after</code>. Also a pure function:
     <code>toKorean('927483041001')</code> → <code>9,274억 8,304만 1,001</code>.
   </p>
+
+  <label>Shorthand entry — try typing <code>3만5천</code> or <code>1.5억</code>, then leave the field · <code>data-numkey-korean-entry</code></label>
+  <input type="text" data-numkey data-numkey-korean-entry data-numkey-korean placeholder="3만5천">
+  <p style="font-size:0.9rem; margin-bottom:0">
+    A Korean draft is left alone while typing (no fight with the IME); blur
+    converts it — <code>3만5천</code> → <code>35,000</code>. The reading and any
+    <code>data-numkey-name</code> hidden field see the parsed value even mid-draft.
+  </p>
 </div>
 
 <div class="card">

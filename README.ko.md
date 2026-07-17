@@ -78,6 +78,7 @@ numkey는 그 인풋을 한 번에 끝냅니다:
 | `data-numkey-point=","` | 필드에 표시되는 소수점 (기본 `.`) |
 | `data-numkey-locale` | 로케일에서 구분자 유도 — 아래 참조 |
 | `data-numkey-korean` | 실시간 한글 금액 병기 ("150만") — 아래 참조 |
+| `data-numkey-korean-entry` | 만/억 축약 입력 허용 ("3만5천" → blur → "35,000") — 아래 참조 |
 | `data-numkey-name="amount"` | 정식 값을 전송하는 hidden 인풋 — 아래 참조 |
 
 ### 로케일 표시 (옵트인)
@@ -129,6 +130,26 @@ toKorean('1500000')      // "150만"
 toKorean('927483041001') // "9,274억 8,304만 1,001"
 toKorean('100000001')    // "1억 1" — 0인 그룹은 생략
 ```
+
+역방향도 됩니다 — 부동산·주식 앱에서 실제로 입력하는 축약형을 순수 함수로,
+또는 필드에서 직접:
+
+```ts
+import { fromKorean } from '@devslab/numkey'
+
+fromKorean('3만5천')   // "35000"
+fromKorean('1.5억')    // "150000000"
+fromKorean('삼십오만')  // "350000"
+```
+
+```html
+<input data-numkey data-numkey-korean-entry>
+<!-- 3만5천 입력 중에는 건드리지 않고 (IME 조합과 안 싸움),
+     blur에 35,000으로 변환 -->
+```
+
+`getValue`와 `data-numkey-name` hidden 동기화(아래)는 초안이 화면에 있는
+동안에도 파싱된 값을 봅니다.
 
 ### 정식 값으로 전송하기 (`data-numkey-name`)
 
@@ -218,6 +239,7 @@ const [amount, setAmount] = useState('')
 | `format(canonical, opts?)` | 정식 값 → 표시 값 `"1,234,567.89"` |
 | `finalize(canonical)` | 입력 중간 상태 정리 (`"1234."` → `"1234"`) |
 | `toKorean(canonical, opts?)` | 한글 금액 병기 (`"1500000"` → `"150만"`) |
+| `fromKorean(text)` | 만/억 축약 → 정식 값 (`"3만5천"` → `"35000"`) |
 
 ### DOM
 
@@ -237,7 +259,7 @@ const [amount, setAmount] = useState('')
 - 구분자 바로 뒤에서 백스페이스를 누르면 커서가 구분자를 지나칩니다 (숫자는
   다음 백스페이스에서 삭제) — 주요 마스킹 라이브러리들과 같은 동작입니다.
   구분자 건너뛰기 삭제는 로드맵에 있습니다.
-- 로드맵: 만/억 축약 파싱 (`3만5천` → `35000`), 구분자 건너뛰기 삭제.
+- 로드맵: 구분자 건너뛰기 삭제.
 
 ## License
 

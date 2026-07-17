@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.0 (2026-07-17)
+
+- **`fromKorean(text)`** — Korean-shorthand amount parsing, the inverse of
+  `toKorean`: `'3만5천'` → `"35000"`, `'1.5억'` → `"150000000"`,
+  `'삼십오만'` → `"350000"`. Digits + units (만/억/조/경, 천/백/십), full
+  Hangul digits, decimal units, commas/spaces/"원" ignored, bare unit = 1.
+  / 만/억 축약 파싱 — 부동산·주식 앱에서 실제로 입력하는 그대로.
+- **`data-numkey-korean-entry`** / `koreanEntry` option — accept shorthand
+  in the field itself: a Korean draft is left alone while typing (no live
+  reformat fighting the IME) and converted on blur (`3만5천` → `35,000`).
+  `getValue` and the `data-numkey-name` hidden sync see the parsed value
+  even mid-draft. / 인풋에서 바로 축약 입력 — 조합 중에는 건드리지 않고
+  blur에 변환, hidden 동기화는 초안 상태에서도 파싱된 값 유지.
+
 ## 0.2.0 (2026-07-17)
 
 The Korean release. / 한국 특화 릴리스.

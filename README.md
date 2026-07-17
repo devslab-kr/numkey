@@ -80,6 +80,7 @@ it does nothing:
 | `data-numkey-point=","` | decimal mark shown in the field (default `.`) |
 | `data-numkey-locale` | derive separators from a locale — see below |
 | `data-numkey-korean` | live Korean amount reading ("150만") — see below |
+| `data-numkey-korean-entry` | accept Korean shorthand entry ("3만5천" → blur → "35,000") — see below |
 | `data-numkey-name="amount"` | hidden input posting the canonical value — see below |
 
 ### Locale-aware display (opt-in)
@@ -132,6 +133,26 @@ toKorean('1500000')      // "150만"
 toKorean('927483041001') // "9,274억 8,304만 1,001"
 toKorean('100000001')    // "1억 1" — zero groups omitted
 ```
+
+And the inverse — accept the shorthand people actually type into
+부동산/주식 apps, either as a pure function or on the field itself:
+
+```ts
+import { fromKorean } from '@devslab/numkey'
+
+fromKorean('3만5천')   // "35000"
+fromKorean('1.5억')    // "150000000"
+fromKorean('삼십오만')  // "350000"
+```
+
+```html
+<input data-numkey data-numkey-korean-entry>
+<!-- typing 3만5천 is left alone (no live reformat fighting the IME);
+     blur converts it to 35,000 -->
+```
+
+`getValue` and the `data-numkey-name` hidden sync (below) see the parsed
+value even while the draft is still on screen.
 
 ### Posting the canonical value (`data-numkey-name`)
 
@@ -221,6 +242,7 @@ const [amount, setAmount] = useState('')
 | `format(canonical, opts?)` | canonical → display `"1,234,567.89"` |
 | `finalize(canonical)` | settle transient typing states (`"1234."` → `"1234"`) |
 | `toKorean(canonical, opts?)` | Korean amount reading (`"1500000"` → `"150만"`) |
+| `fromKorean(text)` | Korean shorthand → canonical (`"3만5천"` → `"35000"`) |
 
 ### DOM
 
@@ -240,8 +262,7 @@ const [amount, setAmount] = useState('')
 - Backspacing directly over a separator moves the caret past it (the digit
   is deleted on the next backspace) — the same behavior as the major masking
   libraries. Smart separator-skipping deletion is on the roadmap.
-- Roadmap: 만/억 shorthand parsing (`3만5천` → `35000`), smart
-  separator-skipping deletion.
+- Roadmap: smart separator-skipping deletion.
 
 ## License
 

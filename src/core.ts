@@ -29,6 +29,13 @@ export interface NumkeyOptions {
    * `separator`/`decimalPoint` win over the locale.
    */
   locale?: string
+  /**
+   * DOM layer only: accept Korean-shorthand entry ("3만5천"). While the
+   * value contains Korean number characters the field is left alone (no
+   * live reformat — that would fight the IME), and blur converts it via
+   * `fromKorean` ("3만5천" → "35,000"). Default false.
+   */
+  koreanEntry?: boolean
 }
 
 type Resolved = Required<NumkeyOptions>
@@ -82,7 +89,8 @@ export function resolveOptions(opts?: NumkeyOptions): Resolved {
     group: opts?.group ?? 3,
     separator: separator ?? ',',
     decimalPoint: decimalPoint ?? '.',
-    locale: opts?.locale ?? ''
+    locale: opts?.locale ?? '',
+    koreanEntry: opts?.koreanEntry ?? false
   }
 }
 
