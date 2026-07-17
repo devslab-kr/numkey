@@ -8,7 +8,7 @@ export {
   resolveOptions,
   type NumkeyOptions
 } from './core'
-export { toKorean, type ToKoreanOptions } from './korean'
+export { fromKorean, toKorean, type ToKoreanOptions } from './korean'
 export {
   applyToInput,
   bind,

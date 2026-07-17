@@ -223,6 +223,70 @@ describe('data-numkey-name — hidden canonical sync for form POSTs', () => {
   })
 })
 
+describe('data-numkey-korean-entry — shorthand entry', () => {
+  it('leaves a Korean draft alone while typing, converts on blur', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-korean-entry': '' })
+    bind(el)
+    feed(el, '3만5천')
+    expect(el.value).toBe('3만5천') // untouched — no live reformat mid-word
+    el.dispatchEvent(new Event('blur'))
+    expect(el.value).toBe('35,000')
+  })
+
+  it('plain digits still format live', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-korean-entry': '' })
+    bind(el)
+    feed(el, '1234567')
+    expect(el.value).toBe('1,234,567')
+  })
+
+  it('getValue and the hidden sync see the parsed value mid-draft', () => {
+    const el = makeInput({
+      'data-numkey': '',
+      'data-numkey-korean-entry': '',
+      'data-numkey-name': 'amount'
+    })
+    bind(el)
+    const hidden = el.nextElementSibling as HTMLInputElement
+    feed(el, '1.5억')
+    expect(el.value).toBe('1.5억') // display: still the draft
+    expect(getValue(el)).toBe('150000000')
+    expect(hidden.value).toBe('150000000') // posts correctly even pre-blur
+  })
+
+  it('without the attribute Korean characters are stripped as before', () => {
+    const el = makeInput({ 'data-numkey': '' })
+    bind(el)
+    feed(el, '3만5천')
+    expect(el.value).toBe('35')
+  })
+
+  it('typing 1.5억 char by char keeps the decimal until the unit arrives', () => {
+    // regression: the live reformat used to strip the '.' on an integer
+    // field before 억 was typed, silently turning 1.5억 into 15억
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-korean-entry': '' })
+    bind(el)
+    let v = ''
+    for (const ch of '1.5억') {
+      v += ch
+      feed(el, v)
+      v = el.value // simulate the browser: next keystroke appends to what's shown
+    }
+    expect(el.value).toBe('1.5억')
+    el.dispatchEvent(new Event('blur'))
+    expect(el.value).toBe('150,000,000')
+  })
+
+  it('a bare decimal draft on an integer field truncates on blur', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-korean-entry': '' })
+    bind(el)
+    feed(el, '1.5') // user stopped before typing the unit
+    expect(el.value).toBe('1.5') // protected while it could still become 1.5억
+    el.dispatchEvent(new Event('blur'))
+    expect(el.value).toBe('1') // integer field: fraction truncated, not "15"
+  })
+})
+
 describe('observe — auto-init', () => {
   it('binds existing and later-added [data-numkey] inputs', async () => {
     const existing = makeInput({ 'data-numkey': '' })
