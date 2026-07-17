@@ -93,9 +93,17 @@
 <div class="card">
   <h2>Locale (opt-in) <span class="ko">/ 로케일은 옵트인 — 기본값은 브라우저와 무관하게 고정</span></h2>
   <p style="font-size:0.9rem; margin-top:0">
-    By default the display is deterministic (<code>1,234,567.89</code>) no matter the visitor's
-    browser. Add <code>data-numkey-locale</code> only when you want locale separators.
+    <code>data-numkey</code> is the on-switch; <code>data-numkey-locale</code> is an option on top
+    of it that only changes how the value is <em>drawn</em>. The canonical value stays the same.<br>
+    <span class="ko"><code>data-numkey</code>가 스위치, <code>data-numkey-locale</code>은 그 위의
+    표시 옵션 — 정식 값은 그대로입니다.</span>
   </p>
+<pre>&lt;input data-numkey="2"&gt;                          &lt;!-- everyone: 1,234,567.89 --&gt;
+&lt;input data-numkey="2" data-numkey-locale="auto"&gt;  &lt;!-- browser language:
+                                                        de → 1.234.567,89
+                                                        ko → 1,234,567.89 --&gt;
+&lt;input data-numkey="2" data-numkey-locale="de-DE"&gt; &lt;!-- pinned German --&gt;
+&lt;input data-numkey-locale="auto"&gt;                  &lt;!-- ✗ nothing: no data-numkey --&gt;</pre>
   <label>
     <select id="locale-select">
       <option value="">default (deterministic)</option>

@@ -52,15 +52,55 @@ numkey는 그 인풋을 한 번에 끝냅니다:
 
 (또는 서버에서 콤마를 제거해도 됩니다 — POST되는 값은 표시 값입니다.)
 
+### 속성이 동작하는 방식
+
+**`data-numkey`가 스위치입니다.** 인풋을 바인딩시키는 것이 바로 이 속성이고
+(자동 초기화가 `input[data-numkey]`를 감시합니다), 값은 최대 소수 자릿수를
+겸합니다 — 빈 값이면 정수 전용. 나머지 `data-numkey-*` 속성들은 전부
+`data-numkey`가 있는 인풋에서만 읽히는 *옵션*이라, 단독으로는 아무것도 하지
+않습니다:
+
+```html
+<input data-numkey>                        <!-- ON, 정수: 1,234,567 -->
+<input data-numkey="2">                    <!-- ON, 소수 2자리: 1,234.56 -->
+<input data-numkey="2" data-numkey-negative>  <!-- 옵션은 겹쳐 씀 -->
+<input data-numkey-locale="auto">          <!-- ✗ 아무것도 안 함 — data-numkey 없음 -->
+<input>                                    <!-- 평범한 인풋, 건드리지 않음 -->
+```
+
 | 속성 | 의미 |
 |---|---|
-| `data-numkey` | 바인딩; 값은 최대 소수 자릿수 (빈 값 = 정수) |
+| `data-numkey` | **스위치** — 인풋을 바인딩; 값은 최대 소수 자릿수 (빈 값 = 정수) |
 | `data-numkey-negative` | 앞자리 마이너스 허용 |
 | `data-numkey-align="left"` | 자동 오른쪽 정렬 옵트아웃 |
 | `data-numkey-group="4"` | 그룹 크기 (기본 3, 만 단위는 4) |
 | `data-numkey-separator=" "` | 그룹 구분자 (기본 `,`) |
 | `data-numkey-point=","` | 필드에 표시되는 소수점 (기본 `.`) |
-| `data-numkey-locale="auto"` | 로케일에서 구분자 유도 — `"auto"`(브라우저 언어) 또는 `"de-DE"` 같은 BCP 47 태그 |
+| `data-numkey-locale` | 로케일에서 구분자 유도 — 아래 참조 |
+
+### 로케일 표시 (옵트인)
+
+기본 동작은 **고정 표시**입니다: 방문자 브라우저 설정이 무엇이든 모두가
+`1,234,567.89`를 봅니다 — 업무 폼이 보통 원하는 동작이죠.
+`data-numkey-locale`을 붙인 필드만 로케일 구분자를 따릅니다:
+
+```html
+<!-- 모두가 1,234,567.89 — 기본값, 로케일 무관 -->
+<input data-numkey="2">
+
+<!-- 방문자의 브라우저 언어를 따름:
+     독일어 브라우저 → 1.234.567,89
+     한국어 브라우저 → 1,234,567.89 -->
+<input data-numkey="2" data-numkey-locale="auto">
+
+<!-- 모든 방문자에게 독일식으로 고정 -->
+<input data-numkey="2" data-numkey-locale="de-DE">
+```
+
+로케일이 바꾸는 건 **그리는 방식뿐**입니다. 정식 값은 항상
+`"1234567.89"` — 세 경우 모두 `numkey.getValue(el)`이 같은 문자열을
+돌려줍니다. 일반 폼 POST는 *표시 값*을 전송하므로, 로케일을 쓰는 폼은
+제출 전에 `getValue`를 hidden 필드에 담거나 서버에서 정규화하세요.
 
 > `type="text"` 인풋을 쓰세요. numkey가 `inputmode`를 설정해 모바일에서 숫자
 > 키패드가 뜹니다. `type="number"`는 커서 API가 없어 포맷팅과 충돌합니다.
