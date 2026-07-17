@@ -54,15 +54,56 @@ on load. To read the raw value back before submitting:
 (Or simply strip separators server-side — the posted value is the display
 value.)
 
+### How the attributes work
+
+**`data-numkey` is the on-switch.** It is what gets an input bound (auto-init
+watches `input[data-numkey]`), and its value doubles as the max decimal
+places — empty means integers only. Every other `data-numkey-*` attribute is
+an *option* that is only read from inputs that have `data-numkey`; on its own
+it does nothing:
+
+```html
+<input data-numkey>                        <!-- ON, integers: 1,234,567 -->
+<input data-numkey="2">                    <!-- ON, 2 decimals: 1,234.56 -->
+<input data-numkey="2" data-numkey-negative>  <!-- options stack -->
+<input data-numkey-locale="auto">          <!-- ✗ does NOTHING — no data-numkey -->
+<input>                                    <!-- plain input, untouched -->
+```
+
 | Attribute | Meaning |
 |---|---|
-| `data-numkey` | bind; the value is the max decimal places (empty = integer) |
+| `data-numkey` | **the switch** — binds the input; the value is the max decimal places (empty = integer) |
 | `data-numkey-negative` | allow a leading minus |
 | `data-numkey-align="left"` | opt out of automatic right alignment |
 | `data-numkey-group="4"` | group size (default 3) |
 | `data-numkey-separator=" "` | group separator (default `,`) |
 | `data-numkey-point=","` | decimal mark shown in the field (default `.`) |
-| `data-numkey-locale="auto"` | derive separators from a locale — `"auto"` (browser language) or a BCP 47 tag like `"de-DE"` |
+| `data-numkey-locale` | derive separators from a locale — see below |
+
+### Locale-aware display (opt-in)
+
+By default the display is **deterministic**: every visitor sees
+`1,234,567.89`, whatever their browser is set to — which is what business
+forms usually need. `data-numkey-locale` opts a field into locale separators:
+
+```html
+<!-- everyone sees 1,234,567.89 — the default, no locale involved -->
+<input data-numkey="2">
+
+<!-- follows the visitor's browser language:
+     a German browser shows  1.234.567,89
+     a Korean browser shows  1,234,567.89 -->
+<input data-numkey="2" data-numkey-locale="auto">
+
+<!-- pinned to German formatting for every visitor -->
+<input data-numkey="2" data-numkey-locale="de-DE">
+```
+
+The locale changes **only how the value is drawn**. The canonical value is
+always `"1234567.89"` — `numkey.getValue(el)` returns the same string in all
+three cases. Since a plain form POST submits the *display* value, a form
+using locales should read `getValue` into a hidden field (or normalize
+server-side) before submitting.
 
 > Use `type="text"` inputs. numkey sets `inputmode` so mobile keyboards show
 > the numeric keypad; `type="number"` has no caret API and fights formatting.
