@@ -5,6 +5,12 @@
  *   <input data-numkey="2">                    — 2 decimals: 1,234.56
  *   <input data-numkey data-numkey-negative>   — minus allowed
  *   <input data-numkey data-numkey-align="left">  — opt out of right-align
+ *   <input data-numkey data-numkey-korean>     — live "150만" reading in a
+ *       generated <span class="numkey-korean"> after the input (or give the
+ *       attribute a CSS selector to use an existing element)
+ *   <input data-numkey data-numkey-name="amount"> — keep a generated hidden
+ *       input named "amount" in sync with the CANONICAL value, so a classic
+ *       form POST submits "1234567" while the field shows "1,234,567"
  *
  * Binding sets `inputmode` (numeric/decimal) and right-aligns the field
  * unless either is already set, formats any server-rendered value in place,
@@ -25,6 +31,7 @@ import {
   parse,
   type NumkeyOptions
 } from './core'
+import { toKorean } from './korean'
 
 const SELECTOR = 'input[data-numkey]'
 
@@ -139,22 +146,66 @@ export function bind(el: HTMLInputElement, opts?: NumkeyOptions): () => void {
   ) {
     el.style.textAlign = 'right'
   }
+
+  // data-numkey-korean: live "150만" reading. Empty value → generate a span
+  // right after the input; a value is a selector for an existing element.
+  const koreanAttr = el.getAttribute('data-numkey-korean')
+  let koreanTarget: Element | null = null
+  let koreanCreated = false
+  if (koreanAttr !== null) {
+    if (koreanAttr === '') {
+      koreanTarget = document.createElement('span')
+      koreanTarget.className = 'numkey-korean'
+      el.insertAdjacentElement('afterend', koreanTarget)
+      koreanCreated = true
+    } else {
+      koreanTarget = document.querySelector(koreanAttr)
+    }
+  }
+
+  // data-numkey-name: hidden input carrying the canonical value for form
+  // POSTs. Always generated (and removed on unbind).
+  const hiddenName = el.getAttribute('data-numkey-name')
+  let hidden: HTMLInputElement | null = null
+  if (hiddenName) {
+    hidden = document.createElement('input')
+    hidden.type = 'hidden'
+    hidden.name = hiddenName
+    el.insertAdjacentElement('afterend', hidden)
+  }
+
+  const syncExtras = (o: NumkeyOptions): void => {
+    if (!koreanTarget && !hidden) return
+    const canonical = finalize(parse(el.value, o))
+    if (koreanTarget) koreanTarget.textContent = toKorean(canonical)
+    if (hidden) hidden.value = canonical
+  }
+
   applyToInput(el, initial)
+  syncExtras(initial)
 
   let composing = false
+
+  const run = (): void => {
+    const o = resolve()
+    applyToInput(el, o)
+    syncExtras(o)
+  }
 
   const onCompositionStart = (): void => {
     composing = true
   }
   const onCompositionEnd = (): void => {
     composing = false
-    applyToInput(el, resolve())
+    run()
   }
   const onInput = (): void => {
-    if (!composing) applyToInput(el, resolve())
+    if (!composing) run()
   }
   const onBlur = (): void => {
-    finalizeInput(el, resolve())
+    const o = resolve()
+    finalizeInput(el, o)
+    syncExtras(o)
   }
 
   el.addEventListener('compositionstart', onCompositionStart)
@@ -167,6 +218,8 @@ export function bind(el: HTMLInputElement, opts?: NumkeyOptions): () => void {
     el.removeEventListener('compositionend', onCompositionEnd)
     el.removeEventListener('input', onInput)
     el.removeEventListener('blur', onBlur)
+    if (koreanCreated) koreanTarget?.remove()
+    hidden?.remove()
     unbinders.delete(el)
   }
   unbinders.set(el, unbind)

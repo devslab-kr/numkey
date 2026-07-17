@@ -163,6 +163,66 @@ describe('data-numkey-locale — opt-in locale formatting', () => {
   })
 })
 
+describe('data-numkey-korean — live amount reading', () => {
+  it('generates a span after the input and keeps it in sync', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-korean': '' })
+    el.value = '1500000'
+    const unbind = bind(el)
+    const span = el.nextElementSibling as HTMLSpanElement
+    expect(span.className).toBe('numkey-korean')
+    expect(span.textContent).toBe('150만') // server value read at bind
+
+    feed(el, '927483041001')
+    expect(span.textContent).toBe('9,274억 8,304만 1,001')
+
+    unbind()
+    expect(el.nextElementSibling).toBeNull() // generated span removed
+  })
+
+  it('a selector value targets an existing element instead', () => {
+    const target = document.createElement('div')
+    target.id = 'hint'
+    document.body.appendChild(target)
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-korean': '#hint' })
+    const unbind = bind(el)
+    feed(el, '15000')
+    expect(target.textContent).toBe('1만 5,000')
+    unbind()
+    expect(document.getElementById('hint')).not.toBeNull() // not ours to remove
+  })
+})
+
+describe('data-numkey-name — hidden canonical sync for form POSTs', () => {
+  it('generates a hidden input that carries the canonical value', () => {
+    const el = makeInput({ 'data-numkey': '2', 'data-numkey-name': 'amount' })
+    el.value = '1234567.89'
+    const unbind = bind(el)
+    const hidden = el.nextElementSibling as HTMLInputElement
+    expect(hidden.type).toBe('hidden')
+    expect(hidden.name).toBe('amount')
+    expect(el.value).toBe('1,234,567.89') // visible: display
+    expect(hidden.value).toBe('1234567.89') // posted: canonical
+
+    feed(el, '1,234,567.895') // over the decimal budget → truncated
+    expect(hidden.value).toBe('1234567.89')
+
+    feed(el, '500')
+    expect(hidden.value).toBe('500')
+
+    unbind()
+    expect(el.nextElementSibling).toBeNull() // generated hidden removed
+  })
+
+  it('the hidden value is settled even while the display is transient', () => {
+    const el = makeInput({ 'data-numkey': '2', 'data-numkey-name': 'amount' })
+    bind(el)
+    const hidden = el.nextElementSibling as HTMLInputElement
+    feed(el, '1234.')
+    expect(el.value).toBe('1,234.') // transient display kept for typing
+    expect(hidden.value).toBe('1234') // canonical already settled
+  })
+})
+
 describe('observe — auto-init', () => {
   it('binds existing and later-added [data-numkey] inputs', async () => {
     const existing = makeInput({ 'data-numkey': '' })

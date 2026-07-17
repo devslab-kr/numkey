@@ -77,6 +77,8 @@ numkey는 그 인풋을 한 번에 끝냅니다:
 | `data-numkey-separator=" "` | 그룹 구분자 (기본 `,`) |
 | `data-numkey-point=","` | 필드에 표시되는 소수점 (기본 `.`) |
 | `data-numkey-locale` | 로케일에서 구분자 유도 — 아래 참조 |
+| `data-numkey-korean` | 실시간 한글 금액 병기 ("150만") — 아래 참조 |
+| `data-numkey-name="amount"` | 정식 값을 전송하는 hidden 인풋 — 아래 참조 |
 
 ### 로케일 표시 (옵트인)
 
@@ -100,7 +102,49 @@ numkey는 그 인풋을 한 번에 끝냅니다:
 로케일이 바꾸는 건 **그리는 방식뿐**입니다. 정식 값은 항상
 `"1234567.89"` — 세 경우 모두 `numkey.getValue(el)`이 같은 문자열을
 돌려줍니다. 일반 폼 POST는 *표시 값*을 전송하므로, 로케일을 쓰는 폼은
-제출 전에 `getValue`를 hidden 필드에 담거나 서버에서 정규화하세요.
+`data-numkey-name`(아래)으로 전송하거나 서버에서 정규화하세요.
+
+### 한글 금액 병기
+
+은행·핀테크 UI가 금액 필드 옆에 그리는 "150만" 힌트 — 프로젝트마다
+손으로 다시 만드는 바로 그것:
+
+```html
+<input data-numkey data-numkey-korean>
+<!-- 1500000 입력 시:
+     <input value="1,500,000"> <span class="numkey-korean">150만</span> -->
+
+<input data-numkey data-numkey-korean="#my-hint">  <!-- 기존 요소 사용 -->
+```
+
+속성이 빈 값이면 인풋 바로 뒤에 `<span class="numkey-korean">`을 생성합니다
+(무스타일 — "원"은 CSS로: `.numkey-korean::after { content: " 원" }`).
+값을 주면 기존 요소의 CSS 셀렉터로 해석합니다. 같은 엔진을 순수 함수로도
+쓸 수 있습니다:
+
+```ts
+import { toKorean } from '@devslab/numkey'
+
+toKorean('1500000')      // "150만"
+toKorean('927483041001') // "9,274억 8,304만 1,001"
+toKorean('100000001')    // "1억 1" — 0인 그룹은 생략
+```
+
+### 정식 값으로 전송하기 (`data-numkey-name`)
+
+일반 폼 POST는 필드에 보이는 그대로 — `1,234,567` — 전송하고, 서버는 매번
+콤마를 제거해야 합니다. `data-numkey-name`은 정리된 정식 값을 항상 담고
+있는 hidden 인풋을 생성합니다:
+
+```html
+<form method="post">
+  <!-- 보이는 인풋에는 name이 없고, hidden이 amount=1234567을 전송 -->
+  <input data-numkey data-numkey-name="amount" value="1234567">
+</form>
+```
+
+hidden 값은 입력 중간 상태에서도 정리된 상태를 유지하므로 (`1,234.`는
+`1234`로 전송), 어느 순간 제출되든 서버는 깨끗한 숫자를 받습니다.
 
 > `type="text"` 인풋을 쓰세요. numkey가 `inputmode`를 설정해 모바일에서 숫자
 > 키패드가 뜹니다. `type="number"`는 커서 API가 없어 포맷팅과 충돌합니다.
@@ -173,6 +217,7 @@ const [amount, setAmount] = useState('')
 | `parse(display, opts?)` | 표시 값/붙여넣기 → 정식 값 `"1234567.89"` |
 | `format(canonical, opts?)` | 정식 값 → 표시 값 `"1,234,567.89"` |
 | `finalize(canonical)` | 입력 중간 상태 정리 (`"1234."` → `"1234"`) |
+| `toKorean(canonical, opts?)` | 한글 금액 병기 (`"1500000"` → `"150만"`) |
 
 ### DOM
 
@@ -192,8 +237,7 @@ const [amount, setAmount] = useState('')
 - 구분자 바로 뒤에서 백스페이스를 누르면 커서가 구분자를 지나칩니다 (숫자는
   다음 백스페이스에서 삭제) — 주요 마스킹 라이브러리들과 같은 동작입니다.
   구분자 건너뛰기 삭제는 로드맵에 있습니다.
-- 로드맵: 한글 금액 병기 (`1500000` → “150만”), 만/억 축약 파싱
-  (`3만5천` → `35000`), 클래식 폼 전송용 hidden 필드 정식 값 동기화.
+- 로드맵: 만/억 축약 파싱 (`3만5천` → `35000`), 구분자 건너뛰기 삭제.
 
 ## License
 
