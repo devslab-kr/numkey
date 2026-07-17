@@ -4,6 +4,13 @@
 
 Initial release. / 최초 릴리스.
 
+- Opt-in locale formatting: `locale: 'auto' | 'de-DE' | …` /
+  `data-numkey-locale` derives separators via `Intl.NumberFormat`; without it
+  the display stays deterministic regardless of the visitor's browser. /
+  옵트인 로케일 포맷팅 — 지정하지 않으면 브라우저와 무관하게 표시 고정.
+- `setValue(el, canonical)` — programmatic canonical writes (the counterpart
+  of `getValue`). / 정식 값 프로그래매틱 기록.
+- GitHub Pages demo site (`site/`, deployed on main push). / 데모 사이트.
 - Core: `parse` / `format` / `finalize` — string-first canonical value model
   (money-safe, no IEEE 754), thousands grouping, leading-zero cleanup,
   full-width digit normalization, custom group size / separator /

@@ -4,6 +4,7 @@ import {
   countSignificant,
   finalize,
   format,
+  localeSeparators,
   parse
 } from './core'
 
@@ -91,6 +92,42 @@ describe('format — canonical → display', () => {
       const once = format(parse(v, o), o)
       expect(format(parse(once, o), o)).toBe(once)
     }
+  })
+})
+
+describe('locale — opt-in separator derivation via Intl', () => {
+  it('derives separators from a BCP 47 tag', () => {
+    expect(localeSeparators('de-DE')).toEqual({
+      separator: '.',
+      decimalPoint: ','
+    })
+    expect(localeSeparators('ko-KR')).toEqual({
+      separator: ',',
+      decimalPoint: '.'
+    })
+  })
+
+  it('format/parse round-trip under a locale', () => {
+    const o = { decimals: 2, locale: 'de-DE' }
+    expect(format('1234567.89', o)).toBe('1.234.567,89')
+    expect(parse('1.234.567,89', o)).toBe('1234567.89')
+  })
+
+  it('explicit separator/decimalPoint win over the locale', () => {
+    expect(format('1234567', { locale: 'de-DE', separator: ' ' })).toBe(
+      '1 234 567'
+    )
+  })
+
+  it('falls back to deterministic defaults on an invalid tag', () => {
+    expect(localeSeparators('no-such-locale-tag-!!!')).toEqual({
+      separator: ',',
+      decimalPoint: '.'
+    })
+  })
+
+  it('without locale the display never depends on the environment', () => {
+    expect(format('1234567.5', { decimals: 1 })).toBe('1,234,567.5')
   })
 })
 

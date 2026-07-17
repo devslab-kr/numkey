@@ -3,37 +3,153 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>numkey — numeric input formatting demo</title>
+<title>numkey — numeric input formatting. One script tag.</title>
+<meta name="description" content="Live thousands grouping, caret-safe editing, leading-zero cleanup, right alignment. Zero dependencies. Plain <script>, Vue, React.">
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 3rem auto; padding: 0 1rem; }
-  label { display: block; margin: 1.25rem 0 0.25rem; font-weight: 600; }
-  input { font-size: 1.1rem; padding: 0.4rem 0.6rem; width: 16rem; }
-  code { background: #f4f4f4; padding: 0.1rem 0.3rem; border-radius: 3px; }
-  .canonical { color: #666; font-size: 0.9rem; margin-top: 0.25rem; }
+  :root {
+    --fg: #1a1a1a; --muted: #6b7280; --line: #e5e7eb;
+    --accent: #0f766e; --code-bg: #f6f8fa; --card: #ffffff; --bg: #fafafa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fg: #e5e7eb; --muted: #9ca3af; --line: #374151;
+      --accent: #2dd4bf; --code-bg: #111827; --card: #1f2937; --bg: #111318;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--fg); background: var(--bg);
+    max-width: 720px; margin: 0 auto; padding: 3rem 1.25rem 4rem;
+    line-height: 1.6;
+  }
+  h1 { font-size: 2.4rem; margin: 0; letter-spacing: -0.02em; }
+  h1 .key { color: var(--accent); }
+  .tagline { color: var(--muted); margin: 0.35rem 0 0; font-size: 1.05rem; }
+  .links { margin: 1rem 0 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.95rem; }
+  .links a { color: var(--accent); text-decoration: none; }
+  .links a:hover { text-decoration: underline; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1.25rem 1.5rem; margin: 1.25rem 0;
+  }
+  .card h2 { font-size: 1.05rem; margin: 0 0 0.75rem; }
+  label { display: block; margin: 1rem 0 0.3rem; font-size: 0.9rem; color: var(--muted); }
+  label code, p code, li code {
+    background: var(--code-bg); padding: 0.1rem 0.35rem; border-radius: 4px;
+    font-size: 0.85em; border: 1px solid var(--line);
+  }
+  input[type="text"] {
+    font-size: 1.15rem; padding: 0.5rem 0.7rem; width: 100%; max-width: 20rem;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--bg); color: var(--fg);
+  }
+  input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  select {
+    font-size: 0.95rem; padding: 0.35rem 0.5rem; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+  }
+  .canonical { font-size: 0.85rem; color: var(--muted); margin-top: 0.35rem; }
+  .canonical code { color: var(--accent); }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+    padding: 0.9rem 1rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.5;
+  }
+  .ko { color: var(--muted); font-size: 0.92rem; }
+  footer { margin-top: 3rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+  footer a { color: var(--accent); text-decoration: none; }
 </style>
 </head>
 <body>
-<h1>numkey</h1>
-<p>One script tag. Markup attributes. No build step.</p>
 
-<label>Integer <code>data-numkey</code></label>
-<input id="int" data-numkey value="1234567">
+<h1>num<span class="key">key</span></h1>
+<p class="tagline">It's a string, but it's a number. — Numeric input formatting, done once.<br>
+<span class="ko">문자열인데 숫자인 필드 — 콤마·커서·정렬·앞자리 0, 한 번에 끝.</span></p>
 
-<label>2 decimals <code>data-numkey="2"</code></label>
-<input id="dec" data-numkey="2">
+<div class="links">
+  <a href="https://github.com/devslab-kr/numkey">GitHub</a>
+  <a href="https://www.npmjs.com/package/@devslab/numkey">npm</a>
+  <a href="https://github.com/devslab-kr/numkey#readme">English docs</a>
+  <a href="https://github.com/devslab-kr/numkey/blob/main/README.ko.md">한국어 문서</a>
+</div>
 
-<label>Negative <code>data-numkey data-numkey-negative</code></label>
-<input id="neg" data-numkey data-numkey-negative>
+<div class="card">
+  <h2>Try it — everything below is just markup <span class="ko">/ 전부 마크업만으로 동작합니다</span></h2>
 
-<p class="canonical">Canonical value of the first field: <code id="out">?</code></p>
+  <label>Integer · <code>&lt;input data-numkey&gt;</code></label>
+  <input type="text" id="int" data-numkey value="1234567">
+  <div class="canonical">canonical: <code id="int-out"></code></div>
 
-<script src="../dist/numkey.global.js"></script>
+  <label>2 decimals · <code>&lt;input data-numkey="2"&gt;</code></label>
+  <input type="text" id="dec" data-numkey="2" placeholder="1234567.89">
+
+  <label>Negative · <code>data-numkey-negative</code></label>
+  <input type="text" id="neg" data-numkey data-numkey-negative placeholder="-9999">
+
+  <label>Paste sanitizing — try pasting <code>₩ 1,234,567원</code> or full-width <code>１２３４</code></label>
+  <input type="text" data-numkey placeholder="paste here">
+</div>
+
+<div class="card">
+  <h2>Locale (opt-in) <span class="ko">/ 로케일은 옵트인 — 기본값은 브라우저와 무관하게 고정</span></h2>
+  <p style="font-size:0.9rem; margin-top:0">
+    By default the display is deterministic (<code>1,234,567.89</code>) no matter the visitor's
+    browser. Add <code>data-numkey-locale</code> only when you want locale separators.
+  </p>
+  <label>
+    <select id="locale-select">
+      <option value="">default (deterministic)</option>
+      <option value="auto">auto — browser language</option>
+      <option value="de-DE">de-DE — 1.234.567,89</option>
+      <option value="fr-FR">fr-FR — 1 234 567,89</option>
+      <option value="en-US">en-US — 1,234,567.89</option>
+    </select>
+  </label>
+  <input type="text" id="loc" data-numkey="2" value="1234567.89">
+  <div class="canonical">canonical stays: <code id="loc-out"></code></div>
+</div>
+
+<div class="card">
+  <h2>No build step <span class="ko">/ JSP·PHP·정적 페이지 — 스크립트 태그 한 줄</span></h2>
+<pre>&lt;script src="https://cdn.jsdelivr.net/npm/@devslab/numkey"&gt;&lt;/script&gt;
+
+&lt;input data-numkey&gt;                       &lt;!-- 1,234,567 --&gt;
+&lt;input data-numkey="2"&gt;                   &lt;!-- 1,234.56 --&gt;
+&lt;input data-numkey data-numkey-negative&gt;  &lt;!-- minus ok --&gt;</pre>
+  <p style="font-size:0.9rem">Vue 3 / React adapters and the full API:
+    <a href="https://github.com/devslab-kr/numkey#readme" style="color:var(--accent)">README</a>.
+    Wrong-keyboard-layout text in the same form? See numkey's sibling
+    <a href="https://devslab-kr.github.io/kokey/" style="color:var(--accent)">kokey</a>.</p>
+</div>
+
+<footer>
+  MIT · <a href="https://github.com/devslab-kr">devslab</a> ·
+  the “-key” input family: <a href="https://devslab-kr.github.io/kokey/">kokey</a> (keyboard layouts) · numkey (numbers)
+</footer>
+
+<script src="numkey.global.js"></script>
 <script>
-  const int = document.getElementById('int')
-  const out = document.getElementById('out')
-  const sync = () => { out.textContent = JSON.stringify(numkey.getValue(int)) }
-  int.addEventListener('input', sync)
-  sync()
+  // canonical read-back demos
+  var intEl = document.getElementById('int')
+  var intOut = document.getElementById('int-out')
+  var syncInt = function () { intOut.textContent = JSON.stringify(numkey.getValue(intEl)) }
+  intEl.addEventListener('input', syncInt)
+  syncInt()
+
+  // locale switcher: canonical value survives the display change
+  var locEl = document.getElementById('loc')
+  var locOut = document.getElementById('loc-out')
+  var syncLoc = function () { locOut.textContent = JSON.stringify(numkey.getValue(locEl)) }
+  locEl.addEventListener('input', syncLoc)
+  syncLoc()
+
+  document.getElementById('locale-select').addEventListener('change', function (e) {
+    var canonical = numkey.getValue(locEl)
+    if (e.target.value) locEl.setAttribute('data-numkey-locale', e.target.value)
+    else locEl.removeAttribute('data-numkey-locale')
+    numkey.setValue(locEl, canonical)
+    syncLoc()
+  })
 </script>
 </body>
 </html>

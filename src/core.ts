@@ -21,17 +21,68 @@ export interface NumkeyOptions {
   separator?: string
   /** Decimal mark in the display value. The canonical value always uses '.'. Default '.'. */
   decimalPoint?: string
+  /**
+   * Derive `separator`/`decimalPoint` from a locale via `Intl.NumberFormat`:
+   * a BCP 47 tag ("de-DE") or "auto" (the browser language). OPT-IN — by
+   * default the display is deterministic (`,` / `.`) regardless of the
+   * visitor's browser, which is what business forms usually need. Explicit
+   * `separator`/`decimalPoint` win over the locale.
+   */
+  locale?: string
 }
 
 type Resolved = Required<NumkeyOptions>
 
+const localeCache = new Map<string, { separator: string; decimalPoint: string }>()
+
+/**
+ * The group separator and decimal mark a locale uses ("de-DE" → `.` / `,`).
+ * "auto" (or empty) resolves the browser language; unknown tags and non-Intl
+ * environments fall back to `,` / `.`.
+ */
+export function localeSeparators(locale?: string): {
+  separator: string
+  decimalPoint: string
+} {
+  const tag =
+    !locale || locale === 'auto'
+      ? typeof navigator !== 'undefined'
+        ? navigator.language
+        : undefined
+      : locale
+  const key = tag ?? ''
+  const cached = localeCache.get(key)
+  if (cached) return cached
+
+  let out = { separator: ',', decimalPoint: '.' }
+  try {
+    const parts = new Intl.NumberFormat(tag).formatToParts(1234567.8)
+    out = {
+      separator: parts.find((p) => p.type === 'group')?.value ?? ',',
+      decimalPoint: parts.find((p) => p.type === 'decimal')?.value ?? '.'
+    }
+  } catch {
+    /* invalid tag → deterministic defaults */
+  }
+  localeCache.set(key, out)
+  return out
+}
+
 export function resolveOptions(opts?: NumkeyOptions): Resolved {
+  let separator = opts?.separator
+  let decimalPoint = opts?.decimalPoint
+  if (opts?.locale && (separator === undefined || decimalPoint === undefined)) {
+    const derived = localeSeparators(opts.locale)
+    separator ??= derived.separator
+    decimalPoint ??= derived.decimalPoint
+  }
   return {
     decimals: opts?.decimals ?? 0,
     negative: opts?.negative ?? false,
     group: opts?.group ?? 3,
-    separator: opts?.separator ?? ',',
-    decimalPoint: opts?.decimalPoint ?? '.'
+    separator: separator ?? ',',
+    decimalPoint: decimalPoint ?? '.',
+    locale: opts?.locale ?? ''
   }
 }
 

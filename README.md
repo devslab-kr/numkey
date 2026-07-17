@@ -1,8 +1,10 @@
 # numkey
 
-[![npm](https://img.shields.io/npm/v/@devslab/numkey)](https://www.npmjs.com/package/@devslab/numkey)
+**English** | [한국어](README.ko.md) · [Live demo](https://devslab-kr.github.io/numkey/)
+
+[![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
 [![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/@devslab/numkey)](./LICENSE)
+[![license](https://img.shields.io/npm/l/%40devslab%2Fnumkey)](./LICENSE)
 
 **"It's a string, but it's a number."** Every business app has these fields —
 amounts, quantities, prices — and every team rebuilds the same input by hand:
@@ -60,6 +62,7 @@ value.)
 | `data-numkey-group="4"` | group size (default 3) |
 | `data-numkey-separator=" "` | group separator (default `,`) |
 | `data-numkey-point=","` | decimal mark shown in the field (default `.`) |
+| `data-numkey-locale="auto"` | derive separators from a locale — `"auto"` (browser language) or a BCP 47 tag like `"de-DE"` |
 
 > Use `type="text"` inputs. numkey sets `inputmode` so mobile keyboards show
 > the numeric keypad; `type="number"` has no caret API and fights formatting.
@@ -123,6 +126,7 @@ const [amount, setAmount] = useState('')
 | `group` | `3` | digits per group (4 for 만-style grouping) |
 | `separator` | `","` | group separator in the display |
 | `decimalPoint` | `"."` | decimal mark in the display (canonical always uses `.`) |
+| `locale` | — | **opt-in**: derive `separator`/`decimalPoint` via `Intl` — `"auto"` (browser language) or a BCP 47 tag. Without it the display is deterministic no matter the visitor's browser, which is what business forms usually need. Explicit `separator`/`decimalPoint` win. |
 
 ### Core (pure functions)
 
@@ -139,6 +143,7 @@ const [amount, setAmount] = useState('')
 | `bind(el, opts?)` | attach live formatting; returns an unbind function |
 | `observe(root?)` | bind all `[data-numkey]` now and as they appear |
 | `getValue(el, opts?)` | canonical value of a bound input |
+| `setValue(el, canonical, opts?)` | write a canonical value as the formatted display |
 | `applyToInput(el, opts?)` | one caret-preserving reformat (building block) |
 | `createRefBinder(opts?)` | ref-callback factory for any framework |
 

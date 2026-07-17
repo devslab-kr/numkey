@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from 'vitest'
-import { applyToInput, bind, getValue, observe } from './dom'
+import { applyToInput, bind, getValue, observe, setValue } from './dom'
 
 function makeInput(attrs: Record<string, string> = {}): HTMLInputElement {
   const el = document.createElement('input')
@@ -129,11 +129,37 @@ describe('bind — attribute-driven behavior', () => {
   })
 })
 
-describe('getValue — canonical read-back', () => {
-  it('returns the unformatted, settled value using the element options', () => {
+describe('getValue / setValue — canonical read/write', () => {
+  it('getValue returns the unformatted, settled value using the element options', () => {
     const el = makeInput({ 'data-numkey': '2', 'data-numkey-negative': '' })
     el.value = '-1,234,567.'
     expect(getValue(el)).toBe('-1234567')
+  })
+
+  it('setValue writes a canonical value as the formatted display', () => {
+    const el = makeInput({ 'data-numkey': '2' })
+    setValue(el, '1234567.89')
+    expect(el.value).toBe('1,234,567.89')
+    expect(getValue(el)).toBe('1234567.89')
+  })
+
+  it('canonical values survive a locale switch via setValue', () => {
+    const el = makeInput({ 'data-numkey': '2' })
+    setValue(el, '1234567.89')
+    const canonical = getValue(el)
+    el.setAttribute('data-numkey-locale', 'de-DE')
+    setValue(el, canonical)
+    expect(el.value).toBe('1.234.567,89')
+    expect(getValue(el)).toBe('1234567.89')
+  })
+})
+
+describe('data-numkey-locale — opt-in locale formatting', () => {
+  it('formats with the locale separators from the attribute', () => {
+    const el = makeInput({ 'data-numkey': '2', 'data-numkey-locale': 'de-DE' })
+    bind(el)
+    feed(el, '1234567,8')
+    expect(el.value).toBe('1.234.567,8')
   })
 })
 
