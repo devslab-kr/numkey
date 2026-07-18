@@ -4,6 +4,10 @@
 
 Try it online: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla) · [Vue](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vue) · [React](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/react) | [📦 CodeSandbox](https://codesandbox.io/s/github/devslab-kr/numkey/tree/main/examples/vanilla)
 
+<p align="center">
+  <a href="https://devslab-kr.github.io/numkey/"><img src="https://raw.githubusercontent.com/devslab-kr/numkey/main/docs/preview.png" alt="numkey demo — live thousands grouping, Korean amount reading (150만 원), paste sanitizing" width="720"></a>
+</p>
+
 [![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
 [![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
 [![license](https://img.shields.io/npm/l/%40devslab%2Fnumkey)](./LICENSE)
@@ -266,6 +270,12 @@ const [amount, setAmount] = useState('')
 - Backspace/Delete next to a group separator deletes the adjacent digit in
   one keystroke (the separator is skipped, and the reformat handles the rest).
 - Roadmap: Indian lakh grouping (`12,34,567` — non-uniform group sizes).
+
+## Contributing
+
+Issues and PRs welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md) for the dev
+setup and the ground rules (string-first values, IME safety, char-by-char
+regression tests).
 
 ## License
 
