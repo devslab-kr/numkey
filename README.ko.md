@@ -4,6 +4,10 @@
 
 바로 실행해보기: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla) · [Vue](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vue) · [React](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/react) | [📦 CodeSandbox](https://codesandbox.io/s/github/devslab-kr/numkey/tree/main/examples/vanilla)
 
+<p align="center">
+  <a href="https://devslab-kr.github.io/numkey/"><img src="https://raw.githubusercontent.com/devslab-kr/numkey/main/docs/preview.png" alt="numkey 데모 — 실시간 천 단위 콤마, 한글 금액 병기 (150만 원), 붙여넣기 정제" width="720"></a>
+</p>
+
 [![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
 [![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
 [![license](https://img.shields.io/npm/l/%40devslab%2Fnumkey)](./LICENSE)
@@ -263,6 +267,12 @@ const [amount, setAmount] = useState('')
 - 구분자 옆 백스페이스/Delete는 한 번에 인접한 숫자를 지웁니다 (구분자는
   건너뛰고, 재포맷이 나머지를 처리).
 - 로드맵: 인도식 lakh 그룹핑 (`12,34,567` — 비균일 그룹 크기).
+
+## 기여하기
+
+이슈·PR 환영합니다 — 개발 환경 셋업과 규칙(문자열 우선 값 모델, IME 안전,
+한 글자씩 타이핑하는 regression 테스트)은
+[CONTRIBUTING.md](./CONTRIBUTING.md)를 보세요.
 
 ## License
 
