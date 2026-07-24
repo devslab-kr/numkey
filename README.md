@@ -1,5 +1,11 @@
 # numkey
 
+[![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
+[![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
+![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6?logo=typescript&logoColor=white)
+[![License](https://img.shields.io/badge/License-MIT-blue)](./LICENSE)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla)
+
 **English** | [한국어](README.ko.md) · [📺 Live demo](https://devslab-kr.github.io/numkey/)
 
 Try it online: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla) · [Vue](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vue) · [React](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/react) | [📦 CodeSandbox](https://codesandbox.io/s/github/devslab-kr/numkey/tree/main/examples/vanilla)
@@ -7,10 +13,6 @@ Try it online: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devsla
 <p align="center">
   <a href="https://devslab-kr.github.io/numkey/"><img src="https://raw.githubusercontent.com/devslab-kr/numkey/main/docs/preview.png" alt="numkey demo — live thousands grouping, Korean amount reading (150만 원), paste sanitizing" width="720"></a>
 </p>
-
-[![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
-[![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/%40devslab%2Fnumkey)](./LICENSE)
 
 **"It's a string, but it's a number."** Every business app has these fields —
 amounts, quantities, prices — and every team rebuilds the same input by hand:
@@ -276,6 +278,11 @@ const [amount, setAmount] = useState('')
 Issues and PRs welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md) for the dev
 setup and the ground rules (string-first values, IME safety, char-by-char
 regression tests).
+
+## Family
+
+- [kokey](https://github.com/devslab-kr/kokey) — the keyboard-layout sibling in the "-key" input family: wrong-layout text restoration with a full Korean IME automaton
+- More open source from [devslab](https://github.com/devslab-kr)
 
 ## License
 
