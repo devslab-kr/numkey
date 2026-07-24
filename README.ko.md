@@ -1,5 +1,11 @@
 # numkey
 
+[![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
+[![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
+![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6?logo=typescript&logoColor=white)
+[![License](https://img.shields.io/badge/License-MIT-blue)](./LICENSE)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla)
+
 [English](README.md) | **한국어** · [📺 라이브 데모](https://devslab-kr.github.io/numkey/)
 
 바로 실행해보기: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla) · [Vue](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vue) · [React](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/react) | [📦 CodeSandbox](https://codesandbox.io/s/github/devslab-kr/numkey/tree/main/examples/vanilla)
@@ -7,10 +13,6 @@
 <p align="center">
   <a href="https://devslab-kr.github.io/numkey/"><img src="https://raw.githubusercontent.com/devslab-kr/numkey/main/docs/preview.png" alt="numkey 데모 — 실시간 천 단위 콤마, 한글 금액 병기 (150만 원), 붙여넣기 정제" width="720"></a>
 </p>
-
-[![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
-[![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/%40devslab%2Fnumkey)](./LICENSE)
 
 **"문자열인데 숫자야."** 업무 시스템엔 이런 필드가 꼭 있습니다 — 금액, 수량,
 단가. 그리고 매번 같은 걸 손으로 다시 만들죠: 실시간 천 단위 콤마(`10,000`),
@@ -273,6 +275,11 @@ const [amount, setAmount] = useState('')
 이슈·PR 환영합니다 — 개발 환경 셋업과 규칙(문자열 우선 값 모델, IME 안전,
 한 글자씩 타이핑하는 regression 테스트)은
 [CONTRIBUTING.md](./CONTRIBUTING.md)를 보세요.
+
+## Family
+
+- [kokey](https://github.com/devslab-kr/kokey) — "-key" 인풋 패밀리의 자판 형제: 완전한 한국어 IME 오토마타로 자판 오입력 텍스트를 복원
+- [devslab](https://github.com/devslab-kr)의 다른 오픈소스
 
 ## License
 
