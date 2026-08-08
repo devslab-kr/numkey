@@ -168,6 +168,54 @@ describe('data-numkey-locale — opt-in locale formatting', () => {
     feed(el, '1234567,8')
     expect(el.value).toBe('1.234.567,8')
   })
+
+  it('picks up the Indian group sizes from the locale', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-locale': 'en-IN' })
+    bind(el)
+    feed(el, '123456789')
+    expect(el.value).toBe('12,34,56,789')
+  })
+})
+
+describe('data-numkey-group — uniform and non-uniform grouping', () => {
+  it('takes a single size (만-style)', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-group': '4' })
+    bind(el)
+    feed(el, '12345678')
+    expect(el.value).toBe('1234,5678')
+  })
+
+  it('takes a primary,secondary pair (Indian lakh)', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-group': '3,2' })
+    bind(el)
+    feed(el, '123456789')
+    expect(el.value).toBe('12,34,56,789')
+    feed(el, '100000')
+    expect(el.value).toBe('1,00,000')
+  })
+
+  it('tolerates spacing and falls back on garbage', () => {
+    const spaced = makeInput({ 'data-numkey': '', 'data-numkey-group': ' 3 , 2 ' })
+    bind(spaced)
+    feed(spaced, '123456789')
+    expect(spaced.value).toBe('12,34,56,789')
+
+    const junk = makeInput({ 'data-numkey': '', 'data-numkey-group': 'abc' })
+    bind(junk)
+    feed(junk, '1234567')
+    expect(junk.value).toBe('1,234,567')
+  })
+
+  it('keeps the caret stable while typing under Indian grouping', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-group': '3,2' })
+    bind(el)
+    // "12345" with the caret at the end → "12,345"; one more digit → "1,23,456"
+    feed(el, '12345', 5)
+    expect(el.value).toBe('12,345')
+    feed(el, '123456', 6)
+    expect(el.value).toBe('1,23,456')
+    expect(el.selectionStart).toBe(el.value.length)
+  })
 })
 
 describe('data-numkey-korean — live amount reading', () => {

@@ -42,6 +42,22 @@ const SELECTOR = 'input[data-numkey]'
 
 const unbinders = new WeakMap<HTMLInputElement, () => void>()
 
+/**
+ * `data-numkey-group` value → the `group` option. A single number is uniform
+ * grouping ("4" for 만-style); a `primary,secondary` pair is non-uniform
+ * ("3,2" for the Indian lakh system).
+ */
+function parseGroupAttr(value: string): number | [number, number] {
+  const parts = value.split(',').map((n) => parseInt(n.trim(), 10))
+  const primary = parts[0]
+  if (primary === undefined || Number.isNaN(primary)) return 3
+  const secondary = parts[1]
+  if (parts.length < 2 || secondary === undefined || Number.isNaN(secondary)) {
+    return primary || 3
+  }
+  return [primary, secondary]
+}
+
 /** Read options from `data-numkey*` attributes. */
 export function optionsFromElement(el: HTMLInputElement): NumkeyOptions {
   const main = el.getAttribute('data-numkey')
@@ -56,7 +72,7 @@ export function optionsFromElement(el: HTMLInputElement): NumkeyOptions {
     negative: el.hasAttribute('data-numkey-negative'),
     koreanEntry: el.hasAttribute('data-numkey-korean-entry')
   }
-  if (group) opts.group = parseInt(group, 10) || 3
+  if (group) opts.group = parseGroupAttr(group)
   if (separator !== null) opts.separator = separator
   if (decimalPoint !== null) opts.decimalPoint = decimalPoint
   if (locale) opts.locale = locale
