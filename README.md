@@ -269,6 +269,11 @@ const [amount, setAmount] = useState('')
 
 - European formats work via options: `{ separator: '.', decimalPoint: ',' }`
   displays `1.234.567,89` while the canonical value stays `"1234567.89"`.
+- Accounting negatives paste correctly: `(1,234)` — what Excel and most ERP
+  exports produce — reads as `-1234` on a `negative` field (currency signs
+  may sit outside the parens). Parentheses that don't enclose digits, like
+  `(주)한국 1234`, are left alone, and a positive-only field ignores the
+  form entirely.
 - Backspace/Delete next to a group separator deletes the adjacent digit in
   one keystroke (the separator is skipped, and the reformat handles the rest).
 - Roadmap: Indian lakh grouping (`12,34,567` — non-uniform group sizes).
