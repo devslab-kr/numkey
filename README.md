@@ -83,7 +83,7 @@ it does nothing:
 | `data-numkey` | **the switch** — binds the input; the value is the max decimal places (empty = integer) |
 | `data-numkey-negative` | allow a leading minus |
 | `data-numkey-align="left"` | opt out of automatic right alignment |
-| `data-numkey-group="4"` | group size (default 3) |
+| `data-numkey-group="4"` | group size (default 3); `"3,2"` for Indian lakh — see below |
 | `data-numkey-separator=" "` | group separator (default `,`) |
 | `data-numkey-point=","` | decimal mark shown in the field (default `.`) |
 | `data-numkey-locale` | derive separators from a locale — see below |
@@ -116,6 +116,26 @@ always `"1234567.89"` — `numkey.getValue(el)` returns the same string in all
 three cases. Since a plain form POST submits the *display* value, a form
 using locales should post through `data-numkey-name` (below) or normalize
 server-side.
+
+### Indian lakh/crore grouping
+
+The Indian system groups the last three digits and then every two —
+`12,34,56,789`, not `123,456,789`. Give `group` a `[primary, secondary]`
+pair, or just name the locale:
+
+```html
+<input data-numkey data-numkey-group="3,2">      <!-- 1,00,000 (1 lakh) -->
+<input data-numkey data-numkey-locale="en-IN">   <!-- same, derived -->
+```
+
+```ts
+format('10000000', { group: [3, 2] })   // '1,00,00,000'  (1 crore)
+format('123456789', { locale: 'en-IN' }) // '12,34,56,789'
+```
+
+An explicit `group` always wins over the locale, and a single number stays
+uniform grouping (`4` → `1234,5678` for 만-style). `group: 0` turns
+separators off entirely.
 
 ### Korean amount reading (한글 금액 병기)
 
@@ -271,7 +291,7 @@ const [amount, setAmount] = createSignal('') // canonical
 |---|---|---|
 | `decimals` | `0` | max fraction digits (0 = integers only) |
 | `negative` | `false` | allow a leading minus |
-| `group` | `3` | digits per group (4 for 만-style grouping) |
+| `group` | `3` | digits per group — `4` for 만-style, `[3, 2]` for Indian lakh, `0` for none |
 | `separator` | `","` | group separator in the display |
 | `decimalPoint` | `"."` | decimal mark in the display (canonical always uses `.`) |
 | `locale` | — | **opt-in**: derive `separator`/`decimalPoint` via `Intl` — `"auto"` (browser language) or a BCP 47 tag. Without it the display is deterministic no matter the visitor's browser, which is what business forms usually need. Explicit `separator`/`decimalPoint` win. |
@@ -325,8 +345,10 @@ const [amount, setAmount] = createSignal('') // canonical
 - ~~`v0.3` — Korean shorthand entry (`3만5천` → 35,000)~~ ✅ shipped
 - ~~`v0.4` — smart deletion across separators + `min`/`max`~~ ✅ shipped
 - ~~`v0.5` — Svelte action / Solid directive~~ ✅ shipped
-- Indian lakh grouping (`12,34,567` — non-uniform group sizes) — demand-gated,
-  [open an issue](https://github.com/devslab-kr/numkey/issues) if you need it
+- ~~`v0.6` — Indian lakh/crore grouping (`12,34,567`) + locale-derived group sizes~~ ✅ shipped
+
+Nothing else is planned — [open an issue](https://github.com/devslab-kr/numkey/issues)
+if your form needs something this doesn't do.
 
 ## Contributing
 

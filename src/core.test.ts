@@ -112,6 +112,37 @@ describe('format — canonical → display', () => {
     ).toBe('1.234.567,89')
   })
 
+  it('groups the Indian way with [primary, secondary] sizes', () => {
+    const o = { group: [3, 2] as [number, number] }
+    expect(format('100000', o)).toBe('1,00,000') // 1 lakh
+    expect(format('10000000', o)).toBe('1,00,00,000') // 1 crore
+    expect(format('123456789', o)).toBe('12,34,56,789')
+    expect(format('1234', o)).toBe('1,234') // below the first cut
+    expect(format('999', o)).toBe('999')
+  })
+
+  it('matches Intl en-IN across integer widths', () => {
+    const nf = new Intl.NumberFormat('en-IN')
+    for (let width = 1; width <= 15; width++) {
+      const digits = '1234567890123456'.slice(0, width)
+      expect(format(digits, { group: [3, 2] })).toBe(nf.format(BigInt(digits)))
+    }
+  })
+
+  it('keeps negatives and decimals intact under Indian grouping', () => {
+    expect(
+      format('-12345678.9', { group: [3, 2], negative: true, decimals: 1 })
+    ).toBe('-1,23,45,678.9')
+  })
+
+  it('treats a secondary size of 0 as uniform grouping', () => {
+    expect(format('123456789', { group: [3, 0] })).toBe('123,456,789')
+  })
+
+  it('turns grouping off with group 0', () => {
+    expect(format('1234567', { group: 0 })).toBe('1234567')
+  })
+
   it('round-trips: format(parse(x)) is stable', () => {
     for (const v of ['1,234,567', '007', '0.50', '-9,999']) {
       const o = { decimals: 2, negative: true }
@@ -125,12 +156,29 @@ describe('locale — opt-in separator derivation via Intl', () => {
   it('derives separators from a BCP 47 tag', () => {
     expect(localeSeparators('de-DE')).toEqual({
       separator: '.',
-      decimalPoint: ','
+      decimalPoint: ',',
+      group: [3, 3]
     })
     expect(localeSeparators('ko-KR')).toEqual({
       separator: ',',
-      decimalPoint: '.'
+      decimalPoint: '.',
+      group: [3, 3]
     })
+  })
+
+  it('derives the Indian group sizes from the tag', () => {
+    expect(localeSeparators('en-IN')).toEqual({
+      separator: ',',
+      decimalPoint: '.',
+      group: [3, 2]
+    })
+    expect(format('123456789', { locale: 'en-IN' })).toBe('12,34,56,789')
+  })
+
+  it('explicit group wins over the locale', () => {
+    expect(format('123456789', { locale: 'en-IN', group: 3 })).toBe(
+      '123,456,789'
+    )
   })
 
   it('format/parse round-trip under a locale', () => {
@@ -148,7 +196,8 @@ describe('locale — opt-in separator derivation via Intl', () => {
   it('falls back to deterministic defaults on an invalid tag', () => {
     expect(localeSeparators('no-such-locale-tag-!!!')).toEqual({
       separator: ',',
-      decimalPoint: '.'
+      decimalPoint: '.',
+      group: [3, 3]
     })
   })
 

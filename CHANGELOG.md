@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.6.0 (2026-08-08)
+
+### Added
+
+- **Indian lakh/crore grouping** — `group` now accepts a
+  `[primary, secondary]` pair, so the last `primary` digits form one group
+  and everything above is cut every `secondary`: `{ group: [3, 2] }` gives
+  `12,34,56,789` (and `1,00,000` for a lakh, `1,00,00,000` for a crore).
+  Available as `data-numkey-group="3,2"` too. A single number still means
+  uniform grouping (`4` → `1234,5678`), and `group: 0` now turns separators
+  off instead of producing a pathological regex.
+  **인도식 lakh/crore 그룹핑** — `group`에 `[primary, secondary]` 쌍 지원
+  (`12,34,56,789`), 속성은 `data-numkey-group="3,2"`.
+
+### Fixed
+
+- **`locale` now derives group sizes, not just separators.** A field with
+  `locale: 'en-IN'` (or `data-numkey-locale="en-IN"`) rendered
+  `123,456,789` — the separator was right but the grouping was not what
+  that locale uses. It now formats `12,34,56,789`, matching
+  `Intl.NumberFormat`. Locales with ordinary thousands grouping are
+  unaffected, and an explicit `group` still wins.
+  **`locale`가 구분자만 따르고 그룹 크기는 무시하던 문제 수정** — `en-IN`
+  필드가 이제 `12,34,56,789`로 나옵니다. 다른 로케일은 영향 없음.
+
+### Changed
+
+- `localeSeparators(tag)` additionally returns `group: [primary, secondary]`.
+  / `localeSeparators`가 `group`을 함께 반환합니다.
+
 ## 0.5.0 (2026-08-08)
 
 ### Added

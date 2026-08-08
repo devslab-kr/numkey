@@ -15,8 +15,13 @@ export interface NumkeyOptions {
   decimals?: number
   /** Allow a leading minus sign. Default false. */
   negative?: boolean
-  /** Digits per group in the integer part. Default 3 (use 4 for 만-style grouping). */
-  group?: number
+  /**
+   * Digits per group in the integer part. Default 3 (use 4 for 만-style
+   * grouping). A `[primary, secondary]` pair groups the last `primary`
+   * digits and every `secondary` digits above them — the Indian system is
+   * `[3, 2]` (`12,34,567` — lakh and crore). 0 turns grouping off.
+   */
+  group?: number | [number, number]
   /** Group separator in the display value. Default ','. */
   separator?: string
   /** Decimal mark in the display value. The canonical value always uses '.'. Default '.'. */
@@ -47,17 +52,37 @@ export interface NumkeyOptions {
 
 type Resolved = Required<NumkeyOptions>
 
-const localeCache = new Map<string, { separator: string; decimalPoint: string }>()
-
-/**
- * The group separator and decimal mark a locale uses ("de-DE" → `.` / `,`).
- * "auto" (or empty) resolves the browser language; unknown tags and non-Intl
- * environments fall back to `,` / `.`.
- */
-export function localeSeparators(locale?: string): {
+export interface LocaleFormat {
   separator: string
   decimalPoint: string
-} {
+  /** `[primary, secondary]` group sizes — `[3, 3]` in most locales, `[3, 2]` in India. */
+  group: [number, number]
+}
+
+const localeCache = new Map<string, LocaleFormat>()
+
+/**
+ * Read the group sizes out of a formatted sample: the last group is the
+ * primary size and the one above it the secondary, which is how CLDR models
+ * grouping ("1,23,45,678" → `[3, 2]`).
+ */
+function groupSizesFromParts(
+  parts: Intl.NumberFormatPart[]
+): [number, number] {
+  const runs = parts.filter((p) => p.type === 'integer').map((p) => p.value.length)
+  if (runs.length < 2) return [3, 3]
+  const primary = runs[runs.length - 1] as number
+  const secondary = runs[runs.length - 2] as number
+  return [primary, secondary]
+}
+
+/**
+ * The group separator, decimal mark and group sizes a locale uses
+ * ("de-DE" → `.` / `,` / `[3,3]`, "en-IN" → `,` / `.` / `[3,2]`).
+ * "auto" (or empty) resolves the browser language; unknown tags and non-Intl
+ * environments fall back to `,` / `.` / `[3,3]`.
+ */
+export function localeSeparators(locale?: string): LocaleFormat {
   const tag =
     !locale || locale === 'auto'
       ? typeof navigator !== 'undefined'
@@ -68,12 +93,14 @@ export function localeSeparators(locale?: string): {
   const cached = localeCache.get(key)
   if (cached) return cached
 
-  let out = { separator: ',', decimalPoint: '.' }
+  let out: LocaleFormat = { separator: ',', decimalPoint: '.', group: [3, 3] }
   try {
     const parts = new Intl.NumberFormat(tag).formatToParts(1234567.8)
     out = {
       separator: parts.find((p) => p.type === 'group')?.value ?? ',',
-      decimalPoint: parts.find((p) => p.type === 'decimal')?.value ?? '.'
+      decimalPoint: parts.find((p) => p.type === 'decimal')?.value ?? '.',
+      // 1234567.8 has enough integer groups to expose both sizes
+      group: groupSizesFromParts(parts)
     }
   } catch {
     /* invalid tag → deterministic defaults */
@@ -85,15 +112,20 @@ export function localeSeparators(locale?: string): {
 export function resolveOptions(opts?: NumkeyOptions): Resolved {
   let separator = opts?.separator
   let decimalPoint = opts?.decimalPoint
-  if (opts?.locale && (separator === undefined || decimalPoint === undefined)) {
+  let group = opts?.group
+  if (
+    opts?.locale &&
+    (separator === undefined || decimalPoint === undefined || group === undefined)
+  ) {
     const derived = localeSeparators(opts.locale)
     separator ??= derived.separator
     decimalPoint ??= derived.decimalPoint
+    group ??= derived.group
   }
   return {
     decimals: opts?.decimals ?? 0,
     negative: opts?.negative ?? false,
-    group: opts?.group ?? 3,
+    group: group ?? 3,
     separator: separator ?? ',',
     decimalPoint: decimalPoint ?? '.',
     locale: opts?.locale ?? '',
@@ -200,6 +232,42 @@ export function parse(input: string, opts?: NumkeyOptions): string {
   return (neg ? '-' : '') + body
 }
 
+/** `group` as a `[primary, secondary]` pair — a plain number means both. */
+export function groupSizes(
+  group: number | [number, number]
+): [number, number] {
+  if (typeof group === 'number') return [group, group]
+  const primary = group[0]
+  const secondary = group[1]
+  return [primary, secondary > 0 ? secondary : primary]
+}
+
+/**
+ * Insert separators right-to-left: the last `primary` digits form one group
+ * and everything above them is cut every `secondary` digits. With equal
+ * sizes this is ordinary thousands grouping; `[3, 2]` gives the Indian
+ * lakh/crore system (`12,34,567`).
+ */
+function groupInteger(
+  intPart: string,
+  group: number | [number, number],
+  separator: string
+): string {
+  const [primary, secondary] = groupSizes(group)
+  if (primary <= 0 || intPart.length <= primary) return intPart
+
+  const head = intPart.slice(0, intPart.length - primary)
+  const tail = intPart.slice(intPart.length - primary)
+  const parts: string[] = []
+  let i = head.length
+  while (i > secondary) {
+    parts.unshift(head.slice(i - secondary, i))
+    i -= secondary
+  }
+  parts.unshift(head.slice(0, i))
+  return parts.join(separator) + separator + tail
+}
+
 /** Canonical → display: group separators in, display decimal mark. */
 export function format(canonical: string, opts?: NumkeyOptions): string {
   const o = resolveOptions(opts)
@@ -211,8 +279,7 @@ export function format(canonical: string, opts?: NumkeyOptions): string {
   const intPart = pointIdx === -1 ? body : body.slice(0, pointIdx)
   const fracPart = pointIdx === -1 ? null : body.slice(pointIdx + 1)
 
-  const grouper = new RegExp(`\\B(?=(\\d{${o.group}})+(?!\\d))`, 'g')
-  let out = (neg ? '-' : '') + intPart.replace(grouper, o.separator)
+  let out = (neg ? '-' : '') + groupInteger(intPart, o.group, o.separator)
   if (fracPart !== null) out += o.decimalPoint + fracPart
   return out
 }

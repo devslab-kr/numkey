@@ -81,7 +81,7 @@ numkey는 그 인풋을 한 번에 끝냅니다:
 | `data-numkey` | **스위치** — 인풋을 바인딩; 값은 최대 소수 자릿수 (빈 값 = 정수) |
 | `data-numkey-negative` | 앞자리 마이너스 허용 |
 | `data-numkey-align="left"` | 자동 오른쪽 정렬 옵트아웃 |
-| `data-numkey-group="4"` | 그룹 크기 (기본 3, 만 단위는 4) |
+| `data-numkey-group="4"` | 그룹 크기 (기본 3, 만 단위는 4); 인도식 lakh는 `"3,2"` — 아래 참조 |
 | `data-numkey-separator=" "` | 그룹 구분자 (기본 `,`) |
 | `data-numkey-point=","` | 필드에 표시되는 소수점 (기본 `.`) |
 | `data-numkey-locale` | 로케일에서 구분자 유도 — 아래 참조 |
@@ -113,6 +113,26 @@ numkey는 그 인풋을 한 번에 끝냅니다:
 `"1234567.89"` — 세 경우 모두 `numkey.getValue(el)`이 같은 문자열을
 돌려줍니다. 일반 폼 POST는 *표시 값*을 전송하므로, 로케일을 쓰는 폼은
 `data-numkey-name`(아래)으로 전송하거나 서버에서 정규화하세요.
+
+### 인도식 lakh/crore 그룹핑
+
+인도식 표기는 마지막 세 자리를 묶고 그 위로는 두 자리씩 끊습니다 —
+`123,456,789`가 아니라 `12,34,56,789`. `group`에 `[primary, secondary]`
+쌍을 주거나, 로케일만 지정하면 됩니다:
+
+```html
+<input data-numkey data-numkey-group="3,2">      <!-- 1,00,000 (1 lakh) -->
+<input data-numkey data-numkey-locale="en-IN">   <!-- 동일, 자동 유도 -->
+```
+
+```ts
+format('10000000', { group: [3, 2] })    // '1,00,00,000'  (1 crore)
+format('123456789', { locale: 'en-IN' }) // '12,34,56,789'
+```
+
+명시한 `group`이 로케일보다 항상 우선하고, 숫자 하나면 기존처럼 균일
+그룹핑입니다(`4` → `1234,5678`, 만 단위). `group: 0`이면 구분자를 아예
+넣지 않습니다.
 
 ### 한글 금액 병기
 
@@ -268,7 +288,7 @@ const [amount, setAmount] = createSignal('') // 정식 값
 |---|---|---|
 | `decimals` | `0` | 최대 소수 자릿수 (0 = 정수만) |
 | `negative` | `false` | 앞자리 마이너스 허용 |
-| `group` | `3` | 그룹당 자릿수 (만 단위 그룹핑은 4) |
+| `group` | `3` | 그룹당 자릿수 — 만 단위는 `4`, 인도식 lakh는 `[3, 2]`, `0`이면 구분 없음 |
 | `separator` | `","` | 표시용 그룹 구분자 |
 | `decimalPoint` | `"."` | 표시용 소수점 (정식 값은 항상 `.`) |
 | `locale` | — | **옵트인**: `Intl`로 `separator`/`decimalPoint` 유도 — `"auto"`(브라우저 언어) 또는 BCP 47 태그. 지정하지 않으면 방문자 브라우저와 무관하게 표시가 고정됩니다 (업무 폼의 기본 요구). 명시한 `separator`/`decimalPoint`가 우선. |
@@ -321,8 +341,10 @@ const [amount, setAmount] = createSignal('') // 정식 값
 - ~~`v0.3` — 한글 축약 입력 (`3만5천` → 35,000)~~ ✅ 출시됨
 - ~~`v0.4` — 구분자 넘는 스마트 삭제 + `min`/`max`~~ ✅ 출시됨
 - ~~`v0.5` — Svelte 액션 / Solid 디렉티브~~ ✅ 출시됨
-- 인도식 lakh 그룹핑 (`12,34,567` — 비균일 그룹 크기) — 수요가 있으면 진행,
-  필요하시면 [이슈](https://github.com/devslab-kr/numkey/issues)로 알려주세요
+- ~~`v0.6` — 인도식 lakh/crore 그룹핑 (`12,34,567`) + 로케일 기반 그룹 크기~~ ✅ 출시됨
+
+예정된 항목은 없습니다 — 폼에 필요한 기능이 빠져 있다면
+[이슈](https://github.com/devslab-kr/numkey/issues)로 알려주세요.
 
 ## 기여하기
 
