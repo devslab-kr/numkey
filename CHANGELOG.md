@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.5.0 (2026-08-08)
+
+### Added
+
+- **Svelte adapter** (`@devslab/numkey/svelte`) — `use:numkey` action taking
+  an options object, a decimals shorthand (`use:numkey={2}`), or nothing
+  (options from the `data-numkey*` attributes). `bind:value` works: the
+  action binds with `resync`, so after a reformat it re-dispatches `input`
+  and the binding picks up the formatted display. `onValue` reports the
+  CANONICAL value — the action's counterpart to React's `onValueChange`.
+  Imports nothing from `svelte`, so there is no peer dependency.
+  **Svelte 어댑터** — `use:numkey` 액션. `bind:value`(표시 값) 동작,
+  `onValue`로 정식 값 수신. `svelte` import 없음 — peer dependency 없음.
+- **Solid adapter** (`@devslab/numkey/solid`) — `use:numkey` directive
+  reactive to a signal, plus a `useNumkey` ref factory. No resync needed:
+  Solid delegates `input` at the document level, so `onInput` already reads
+  the formatted value. `solid-js` is an optional peer dependency.
+  **Solid 어댑터** — 시그널에 반응하는 `use:numkey` 디렉티브 + `useNumkey`
+  ref 팩토리. `solid-js`는 optional peer.
+- **`bind(el, opts, { resync })`** — opt-in re-dispatch of `input` after a
+  reformat changes the value, for frameworks whose own listeners run before
+  the binding (what the Svelte action uses). Loop-safe because reformatting
+  is idempotent. / **`bind` `resync` 옵션** — 포맷 후 `input` 재발행(루프 안전).
+
 ## 0.4.2 (2026-08-08)
 
 ### Fixed
