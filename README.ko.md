@@ -346,6 +346,9 @@ const [amount, setAmount] = createSignal('') // 정식 값
 예정된 항목은 없습니다 — 폼에 필요한 기능이 빠져 있다면
 [이슈](https://github.com/devslab-kr/numkey/issues)로 알려주세요.
 
+검토했지만 로드맵에 올리지 않은 것들(필드 내 접두/접미 표시, 미정 상태인
+음수 한글 병기 표기): [docs/backlog.md](./docs/backlog.md).
+
 ## 기여하기
 
 이슈·PR 환영합니다 — 개발 환경 셋업과 규칙(문자열 우선 값 모델, IME 안전,

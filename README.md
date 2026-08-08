@@ -350,6 +350,9 @@ const [amount, setAmount] = createSignal('') // canonical
 Nothing else is planned — [open an issue](https://github.com/devslab-kr/numkey/issues)
 if your form needs something this doesn't do.
 
+Ideas we considered and why they are not here (in-field prefix/suffix, the
+unspecified Korean reading of negatives): [docs/backlog.md](./docs/backlog.md).
+
 ## Contributing
 
 Issues and PRs welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md) for the dev
