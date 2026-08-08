@@ -62,6 +62,31 @@ describe('parse — display/paste mess → canonical', () => {
       '1234567.89'
     )
   })
+
+  it('reads parentheses as an accounting negative (Excel / ERP exports)', () => {
+    const o = { negative: true, decimals: 2 }
+    expect(parse('(1,234)', o)).toBe('-1234')
+    expect(parse('(1,234.56)', o)).toBe('-1234.56')
+    expect(parse('₩(1,234)', o)).toBe('-1234') // currency outside the parens
+    expect(parse('(1,234)원', o)).toBe('-1234')
+    expect(parse('( 1,234 )', o)).toBe('-1234')
+    expect(parse('（1,234）', o)).toBe('-1234') // full-width, Korean IME
+  })
+
+  it('does not negate twice when a minus sits inside the parens', () => {
+    expect(parse('(-1,234)', { negative: true })).toBe('-1234')
+  })
+
+  it('ignores parentheses that do not enclose digits', () => {
+    expect(parse('(주)한국 1234', { negative: true })).toBe('1234')
+    expect(parse('(abc)', { negative: true })).toBe('')
+    expect(parse('1234)', { negative: true })).toBe('1234') // unpaired
+    expect(parse('(1234', { negative: true })).toBe('1234') // unpaired
+  })
+
+  it('ignores the accounting form on a positive-only field', () => {
+    expect(parse('(1,234)')).toBe('1234')
+  })
 })
 
 describe('format — canonical → display', () => {

@@ -129,11 +129,28 @@ function normalizeChar(ch: string): string {
   if (ch === '．') return '.'
   if (ch === '，') return ','
   if (ch === '－' || ch === '−' || ch === '﹣') return '-'
+  if (ch === '（') return '('
+  if (ch === '）') return ')'
   return ch
 }
 
 function isDigit(ch: string): boolean {
   return ch >= '0' && ch <= '9'
+}
+
+/**
+ * Accounting notation writes negatives in parentheses — "(1,234)" is -1234 —
+ * which is what Excel's accounting format and most ERP exports produce. The
+ * parens must actually enclose digits, so a stray bracket in pasted text
+ * ("(주)한국 1234") does not flip the sign; currency signs may sit outside
+ * them ("₩(1,234)", "(1,234)원").
+ */
+function isAccountingNegative(normalized: string): boolean {
+  const open = normalized.indexOf('(')
+  if (open === -1) return false
+  const close = normalized.lastIndexOf(')')
+  if (close < open) return false
+  return /\d/.test(normalized.slice(open + 1, close))
 }
 
 /**
@@ -144,17 +161,23 @@ function isDigit(ch: string): boolean {
  * currency signs — is dropped. Leading zeros collapse ("007" → "7") but a
  * lone zero and "0.x" survive. The fraction is cut at `decimals` digits.
  * A trailing decimal mark and a lone minus are preserved (transient states).
+ *
+ * Parenthesised input is read as an accounting negative when `negative` is
+ * on ("(1,234)" → "-1234"); a minus alongside the parens does not negate
+ * twice.
  */
 export function parse(input: string, opts?: NumkeyOptions): string {
   const o = resolveOptions(opts)
+  let text = ''
+  for (const raw of input) text += normalizeChar(raw)
+
   let intPart = ''
   let fracPart = ''
   let seenPoint = false
   let seenAny = false
-  let neg = false
+  let neg = o.negative && isAccountingNegative(text)
 
-  for (const raw of input) {
-    const ch = normalizeChar(raw)
+  for (const ch of text) {
     if (isDigit(ch)) {
       seenAny = true
       if (seenPoint) fracPart += ch

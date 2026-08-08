@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.2 (2026-08-08)
+
+### Fixed
+
+- **Accounting negatives no longer lose their sign.** `(1,234)` — the
+  parenthesised negative Excel's accounting format and most ERP exports
+  produce — parsed to `1234`, silently flipping the sign on pasted money.
+  It now reads as `-1234` on a `negative` field, with the currency sign
+  allowed outside the parens (`₩(1,234)`, `(1,234)원`) and full-width
+  parens normalized. Parentheses that don't enclose digits (`(주)한국 1234`)
+  are ignored, a minus inside the parens doesn't negate twice, and
+  positive-only fields are unaffected. / **회계식 음수 부호 소실 수정** —
+  엑셀·ERP가 내보내는 `(1,234)`가 `1234`로 파싱되어 붙여넣은 금액의 부호가
+  조용히 뒤집히던 문제. 이제 `negative` 필드에서 `-1234`로 읽힙니다.
+
 ## 0.4.1 (2026-07-17)
 
 Docs-only republish — no code changes. Runnable `examples/{vanilla,vue,react}`
