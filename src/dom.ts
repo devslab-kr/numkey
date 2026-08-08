@@ -196,15 +196,37 @@ export function setValue(
   el.value = format(finalize(canonical), opts ?? optionsFromElement(el))
 }
 
+export interface BindOptions {
+  /**
+   * Re-dispatch a bubbling `input` event after a reformat changes the value.
+   * Frameworks that attach their own `input` listener before the binding
+   * (Svelte's `bind:value`) read the value before formatting runs; the
+   * re-dispatched event lets them pick up the formatted display. Safe
+   * against loops — reformatting is idempotent, so the second pass changes
+   * nothing and does not re-dispatch.
+   */
+  resync?: boolean
+}
+
 /**
  * Bind formatting to a single element. Options are read from the
  * `data-numkey*` attributes at event time unless `opts` is given explicitly.
  * Returns an unbind function. Binding an already-bound element is a no-op
  * that returns the existing unbinder.
  */
-export function bind(el: HTMLInputElement, opts?: NumkeyOptions): () => void {
+export function bind(
+  el: HTMLInputElement,
+  opts?: NumkeyOptions,
+  bindOpts?: BindOptions
+): () => void {
   const existing = unbinders.get(el)
   if (existing) return existing
+
+  const resync = (changed: boolean): void => {
+    if (changed && bindOpts?.resync) {
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+    }
+  }
 
   const resolve = (): NumkeyOptions => opts ?? optionsFromElement(el)
 
@@ -255,12 +277,14 @@ export function bind(el: HTMLInputElement, opts?: NumkeyOptions): () => void {
   }
 
   const settle = (o: NumkeyOptions): void => {
+    const before = el.value
     if (isKoreanDraftValue(el.value, o)) {
       el.value = format(clamp(constrain(fromKorean(el.value), o), o), o)
     } else {
       finalizeInput(el, o)
     }
     syncExtras(o)
+    resync(el.value !== before)
   }
 
   settle(initial) // server-rendered value → formatted display
@@ -269,8 +293,10 @@ export function bind(el: HTMLInputElement, opts?: NumkeyOptions): () => void {
 
   const run = (): void => {
     const o = resolve()
-    if (!isKoreanDraftValue(el.value, o)) applyToInput(el, o)
+    let changed = false
+    if (!isKoreanDraftValue(el.value, o)) changed = applyToInput(el, o)
     syncExtras(o)
+    resync(changed)
   }
 
   const onCompositionStart = (): void => {

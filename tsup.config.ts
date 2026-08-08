@@ -5,7 +5,9 @@ export default defineConfig([
     entry: {
       index: 'src/index.ts',
       vue: 'src/vue.ts',
-      react: 'src/react.ts'
+      react: 'src/react.ts',
+      svelte: 'src/svelte.ts',
+      solid: 'src/solid.ts'
     },
     format: ['esm', 'cjs'],
     dts: true,

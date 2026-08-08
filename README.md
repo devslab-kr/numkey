@@ -230,6 +230,39 @@ const [amount, setAmount] = useState('')
 <input ref={useNumkey({ decimals: 2 })} defaultValue="1234567" />
 ```
 
+## Svelte
+
+An action — and it imports nothing from `svelte`, so there is no peer
+dependency at all. `bind:value` works: the action re-syncs the binding after
+formatting, so the bound variable holds the **display** value. For the
+**canonical** value use `onValue`.
+
+```svelte
+<script>
+  import { numkey } from '@devslab/numkey/svelte'
+  let amount = ''   // canonical: "1234567"
+  let display = ''  // display:   "1,234,567"
+</script>
+
+<input use:numkey={{ decimals: 2, onValue: (v) => (amount = v) }} />
+<input use:numkey={2} bind:value={display} />
+<input use:numkey />                      <!-- options from data-numkey* -->
+```
+
+## Solid
+
+A `use:` directive (reactive to a signal) and a ref factory. Solid delegates
+`input` at the document level, so `onInput` already reads the formatted
+value — no re-sync needed.
+
+```tsx
+import { numkey, useNumkey } from '@devslab/numkey/solid'
+
+const [amount, setAmount] = createSignal('') // canonical
+<input use:numkey={{ decimals: 2, onValue: setAmount }} />
+<input ref={useNumkey({ decimals: 2 })} value="1234567" />
+```
+
 ## API
 
 ### Options
@@ -265,6 +298,15 @@ const [amount, setAmount] = useState('')
 | `applyToInput(el, opts?)` | one caret-preserving reformat (building block) |
 | `createRefBinder(opts?)` | ref-callback factory for any framework |
 
+### Framework entry points
+
+| | |
+|---|---|
+| `@devslab/numkey/vue` | `NumkeyInput` (v-model → canonical), `vNumkey` directive |
+| `@devslab/numkey/react` | `NumkeyInput` (`value`/`onValueChange` → canonical), `useNumkey` |
+| `@devslab/numkey/svelte` | `use:numkey` action (`bind:value` → display, `onValue` → canonical) |
+| `@devslab/numkey/solid` | `use:numkey` directive, `useNumkey` ref factory |
+
 ## Notes
 
 - European formats work via options: `{ separator: '.', decimalPoint: ',' }`
@@ -276,7 +318,15 @@ const [amount, setAmount] = useState('')
   form entirely.
 - Backspace/Delete next to a group separator deletes the adjacent digit in
   one keystroke (the separator is skipped, and the reformat handles the rest).
-- Roadmap: Indian lakh grouping (`12,34,567` — non-uniform group sizes).
+
+## Roadmap
+
+- ~~`v0.2` — Korean amount reading (`150만`) + hidden canonical sync~~ ✅ shipped
+- ~~`v0.3` — Korean shorthand entry (`3만5천` → 35,000)~~ ✅ shipped
+- ~~`v0.4` — smart deletion across separators + `min`/`max`~~ ✅ shipped
+- ~~`v0.5` — Svelte action / Solid directive~~ ✅ shipped
+- Indian lakh grouping (`12,34,567` — non-uniform group sizes) — demand-gated,
+  [open an issue](https://github.com/devslab-kr/numkey/issues) if you need it
 
 ## Contributing
 

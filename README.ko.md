@@ -227,6 +227,39 @@ const [amount, setAmount] = useState('')
 <input ref={useNumkey({ decimals: 2 })} defaultValue="1234567" />
 ```
 
+## Svelte
+
+액션입니다 — `svelte`에서 아무것도 import하지 않아 peer dependency 자체가
+없습니다. `bind:value`도 동작합니다(포맷 후 바인딩을 재동기화). 다만
+바인딩된 변수에는 **표시 값**이 들어가므로, **정식 값**이 필요하면
+`onValue`를 쓰세요.
+
+```svelte
+<script>
+  import { numkey } from '@devslab/numkey/svelte'
+  let amount = ''   // 정식 값: "1234567"
+  let display = ''  // 표시 값: "1,234,567"
+</script>
+
+<input use:numkey={{ decimals: 2, onValue: (v) => (amount = v) }} />
+<input use:numkey={2} bind:value={display} />
+<input use:numkey />                      <!-- 옵션은 data-numkey*에서 -->
+```
+
+## Solid
+
+`use:` 디렉티브(시그널에 반응)와 ref 팩토리입니다. Solid는 `input`을
+document 레벨에 위임하므로 `onInput`이 이미 포맷된 값을 읽습니다 —
+재동기화가 필요 없습니다.
+
+```tsx
+import { numkey, useNumkey } from '@devslab/numkey/solid'
+
+const [amount, setAmount] = createSignal('') // 정식 값
+<input use:numkey={{ decimals: 2, onValue: setAmount }} />
+<input ref={useNumkey({ decimals: 2 })} value="1234567" />
+```
+
 ## API
 
 ### 옵션
@@ -262,6 +295,15 @@ const [amount, setAmount] = useState('')
 | `applyToInput(el, opts?)` | 커서 보존 1회 재포맷 (빌딩 블록) |
 | `createRefBinder(opts?)` | 어떤 프레임워크에서든 쓰는 ref 콜백 팩토리 |
 
+### 프레임워크 진입점
+
+| | |
+|---|---|
+| `@devslab/numkey/vue` | `NumkeyInput` (v-model → 정식 값), `vNumkey` 디렉티브 |
+| `@devslab/numkey/react` | `NumkeyInput` (`value`/`onValueChange` → 정식 값), `useNumkey` |
+| `@devslab/numkey/svelte` | `use:numkey` 액션 (`bind:value` → 표시 값, `onValue` → 정식 값) |
+| `@devslab/numkey/solid` | `use:numkey` 디렉티브, `useNumkey` ref 팩토리 |
+
 ## 참고
 
 - 유럽식 포맷도 옵션으로 지원: `{ separator: '.', decimalPoint: ',' }`이면
@@ -272,7 +314,15 @@ const [amount, setAmount] = useState('')
   양수 전용 필드는 이 표기를 무시합니다.
 - 구분자 옆 백스페이스/Delete는 한 번에 인접한 숫자를 지웁니다 (구분자는
   건너뛰고, 재포맷이 나머지를 처리).
-- 로드맵: 인도식 lakh 그룹핑 (`12,34,567` — 비균일 그룹 크기).
+
+## 로드맵
+
+- ~~`v0.2` — 한글 금액 병기 (`150만`) + hidden 정식 값 동기화~~ ✅ 출시됨
+- ~~`v0.3` — 한글 축약 입력 (`3만5천` → 35,000)~~ ✅ 출시됨
+- ~~`v0.4` — 구분자 넘는 스마트 삭제 + `min`/`max`~~ ✅ 출시됨
+- ~~`v0.5` — Svelte 액션 / Solid 디렉티브~~ ✅ 출시됨
+- 인도식 lakh 그룹핑 (`12,34,567` — 비균일 그룹 크기) — 수요가 있으면 진행,
+  필요하시면 [이슈](https://github.com/devslab-kr/numkey/issues)로 알려주세요
 
 ## 기여하기
 
