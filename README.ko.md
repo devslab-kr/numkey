@@ -8,7 +8,7 @@
 
 [English](README.md) | **한국어** · [📺 라이브 데모](https://devslab-kr.github.io/numkey/)
 
-바로 실행해보기: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla) · [Vue](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vue) · [React](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/react) | [📦 CodeSandbox](https://codesandbox.io/s/github/devslab-kr/numkey/tree/main/examples/vanilla)
+바로 실행해보기: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla) · [Vue](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vue) · [React](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/react) · [Svelte](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/svelte) · [Solid](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/solid) | [📦 CodeSandbox](https://codesandbox.io/s/github/devslab-kr/numkey/tree/main/examples/vanilla)
 
 <p align="center">
   <a href="https://devslab-kr.github.io/numkey/"><img src="https://raw.githubusercontent.com/devslab-kr/numkey/main/docs/preview.png" alt="numkey 데모 — 실시간 천 단위 콤마, 한글 금액 병기 (150만 원), 붙여넣기 정제" width="720"></a>

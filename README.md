@@ -8,7 +8,7 @@
 
 **English** | [한국어](README.ko.md) · [📺 Live demo](https://devslab-kr.github.io/numkey/)
 
-Try it online: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla) · [Vue](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vue) · [React](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/react) | [📦 CodeSandbox](https://codesandbox.io/s/github/devslab-kr/numkey/tree/main/examples/vanilla)
+Try it online: [⚡ StackBlitz — Vanilla](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vanilla) · [Vue](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/vue) · [React](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/react) · [Svelte](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/svelte) · [Solid](https://stackblitz.com/github/devslab-kr/numkey/tree/main/examples/solid) | [📦 CodeSandbox](https://codesandbox.io/s/github/devslab-kr/numkey/tree/main/examples/vanilla)
 
 <p align="center">
   <a href="https://devslab-kr.github.io/numkey/"><img src="https://raw.githubusercontent.com/devslab-kr/numkey/main/docs/preview.png" alt="numkey demo — live thousands grouping, Korean amount reading (150만 원), paste sanitizing" width="720"></a>
