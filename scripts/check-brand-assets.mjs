@@ -6,6 +6,9 @@ import assert from 'node:assert/strict'
 const root = resolve(import.meta.dirname, '..')
 const read = (file) => readFile(resolve(root, file), 'utf8')
 const hash = async (file) => createHash('sha256').update(await readFile(resolve(root, file))).digest('hex')
+const normalizedTextHash = async (file) => createHash('sha256')
+  .update((await read(file)).replace(/\r\n/g, '\n'))
+  .digest('hex')
 
 const assets = {
   'docs/assets/brand/project-mark.svg': 'db727c53441d059a57d3de4b1201a3681b71b57b9e1854d32881617caa57d236',
@@ -24,7 +27,7 @@ for (const [file, expected] of Object.entries(assets)) {
 }
 
 const checksumFile = 'docs/assets/brand/checksums.txt'
-assert.equal(await hash(checksumFile), 'f26faff6340a3a572dbcc1e78a787d7494caa1927df5d42a4ae0c5e60dc79fa1', 'vendored O04 checksums.txt must remain exact')
+assert.equal(await normalizedTextHash(checksumFile), '82b477d3da36c335e5c189ea0af1626d164eeaa43e061997fb846d09e7ed685d', 'vendored O04 checksums.txt must remain exact across line-ending policies')
 const checksums = await read(checksumFile)
 for (const [asset, expected] of Object.entries({
   'glyph-color.svg': 'db727c53441d059a57d3de4b1201a3681b71b57b9e1854d32881617caa57d236',
