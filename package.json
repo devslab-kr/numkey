@@ -44,6 +44,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
+    "check:brand": "node scripts/check-brand-assets.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

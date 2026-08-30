@@ -3,17 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>numkey — numeric input formatting. One script tag.</title>
-<meta name="description" content="Live thousands grouping, caret-safe editing, leading-zero cleanup, right alignment. Zero dependencies. Plain <script>, Vue, React.">
+<title>numkey: numeric input formatting for real forms</title>
+<meta name="description" content="Caret-safe numeric input formatting with live grouping, canonical string values, and zero dependencies.">
+<link rel="canonical" href="https://devslab-kr.github.io/numkey/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="numkey: numeric input formatting for real forms">
+<meta property="og:description" content="Caret-safe numeric input formatting with live grouping, canonical string values, and zero dependencies.">
+<meta property="og:url" content="https://devslab-kr.github.io/numkey/">
+<meta property="og:image" content="https://devslab-kr.github.io/numkey/og.png">
+<meta property="og:image:alt" content="numkey - a stable caret across grouped numeric units">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="numkey: numeric input formatting for real forms">
+<meta name="twitter:description" content="Caret-safe numeric input formatting with live grouping, canonical string values, and zero dependencies.">
+<meta name="twitter:image" content="https://devslab-kr.github.io/numkey/og.png">
 <style>
   :root {
     --fg: #1a1a1a; --muted: #6b7280; --line: #e5e7eb;
-    --accent: #0f766e; --code-bg: #f6f8fa; --card: #ffffff; --bg: #fafafa;
+    --accent: #7c3aed; --project-accent: #7c3aed; --code-bg: #f6f8fa; --card: #ffffff; --bg: #fafafa;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --fg: #e5e7eb; --muted: #9ca3af; --line: #374151;
-      --accent: #2dd4bf; --code-bg: #111827; --card: #1f2937; --bg: #111318;
+      --accent: #c4b5fd; --project-accent: #c4b5fd; --code-bg: #111827; --card: #1f2937; --bg: #111318;
     }
   }
   * { box-sizing: border-box; }
@@ -25,6 +39,13 @@
   }
   h1 { font-size: 2.4rem; margin: 0; letter-spacing: -0.02em; }
   h1 .key { color: var(--accent); }
+  .hero-atmosphere { position: relative; isolation: isolate; margin: -3rem -1.25rem 2.5rem; border-bottom: 1px solid var(--line); }
+  .hero-atmosphere > [aria-hidden="true"].hero-atmosphere__glow { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 38% 58% at 86% 22%, rgb(6 182 212 / .11), transparent 72%); }
+  .hero-atmosphere > :not([aria-hidden="true"].hero-atmosphere__glow) { position: relative; z-index: 1; }
+  [data-atmosphere="project"] > [aria-hidden="true"].hero-atmosphere__glow::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 30% 42% at 86% 22%, var(--project-accent) 0%, transparent 72%); opacity: .08; pointer-events: none; }
+  .hero-atmosphere__content { padding: 2.5rem 1.25rem 2rem; }
+  .project-mark { display: inline-flex; align-items: center; margin-bottom: 0.9rem; }
+  .project-mark img { display: block; width: min(100%, 18rem); height: auto; color: var(--fg); }
   .tagline { color: var(--muted); margin: 0.35rem 0 0; font-size: 1.05rem; }
   .links { margin: 1rem 0 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.95rem; }
   .links a { color: var(--accent); text-decoration: none; }
@@ -60,13 +81,20 @@
   .ko { color: var(--muted); font-size: 0.92rem; }
   footer { margin-top: 3rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 1rem; }
   footer a { color: var(--accent); text-decoration: none; }
+  @media (forced-colors: active), print { .hero-atmosphere > [aria-hidden="true"].hero-atmosphere__glow, .hero-atmosphere > [aria-hidden="true"].hero-atmosphere__glow::after { display: none; } }
 </style>
 </head>
 <body>
 
-<h1>num<span class="key">key</span></h1>
-<p class="tagline">It's a string, but it's a number. — Numeric input formatting, done once.<br>
-<span class="ko">문자열인데 숫자인 필드 — 콤마·커서·정렬·앞자리 0, 한 번에 끝.</span></p>
+<header class="hero-atmosphere" data-atmosphere="project">
+  <div class="hero-atmosphere__glow" aria-hidden="true"></div>
+  <div class="hero-atmosphere__content">
+    <a class="project-mark" href="https://devslab.kr/brand/open-source/" aria-label="numkey, Open source by DevsLab"><img src="project-lockup.svg" alt="numkey, Open source by DevsLab"></a>
+    <h1>num<span class="key">key</span></h1>
+    <p class="tagline">It's a string, but it's a number. Numeric input formatting, done once.<br>
+    <span class="ko">문자열인데 숫자인 필드. 콤마·커서·정렬·앞자리 0, 한 번에 끝.</span></p>
+  </div>
+</header>
 
 <div class="links">
   <a href="https://github.com/devslab-kr/numkey">GitHub</a>
