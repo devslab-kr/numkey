@@ -4,7 +4,7 @@
   <a href="https://devslab.kr/brand/open-source/"><img src="docs/assets/brand/readme-header.png" alt="numkey - 묶인 숫자 단위를 가로지르는 안정된 캐럿" width="960"></a>
 </p>
 
-Open source by [DevsLab](https://devslab.kr/brand/open-source/)
+[DevsLab 오픈소스](https://devslab.kr/brand/open-source/)
 
 [![npm](https://img.shields.io/npm/v/%40devslab%2Fnumkey)](https://www.npmjs.com/package/@devslab/numkey)
 [![CI](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml/badge.svg)](https://github.com/devslab-kr/numkey/actions/workflows/ci.yml)
