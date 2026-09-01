@@ -11,15 +11,15 @@ const normalizedTextHash = async (file) => createHash('sha256')
   .digest('hex')
 
 const assets = {
-  'docs/assets/brand/project-mark.svg': 'db727c53441d059a57d3de4b1201a3681b71b57b9e1854d32881617caa57d236',
-  'docs/assets/brand/project-lockup.svg': '513474611e05d422c63b15d0de3561435fc6b23b135ba1f7831c75bd7e634b5a',
-  'docs/assets/brand/readme-header.png': '7abcef4d8a4a2d58cba15cec977d86a46ff96970700b9cce2ca47f67814ee76f',
-  'site/favicon.svg': 'db727c53441d059a57d3de4b1201a3681b71b57b9e1854d32881617caa57d236',
-  'site/favicon.ico': '22bbfcdf8fd518251f5d8ecc8aa8b4398a4e795d2eb3b087af5221f90c0f6b7b',
-  'site/apple-touch-icon.png': '262bdf7d2028fd50c95876ff1ffebe83c44ac75b8476f7ab399e106adf56e6e4',
-  'site/og.png': '96fb0eebc5da137e1a99bc3f58ef6f568f13eede79778f0e0a1b56ab143a304b',
-  'site/project-mark-color.svg': 'db727c53441d059a57d3de4b1201a3681b71b57b9e1854d32881617caa57d236',
-  'site/project-mark-reversed.svg': '0d68b20d404b13618b97170d700f07d60e78a072db6e9553df964b7b0a85593f',
+  'docs/assets/brand/project-mark.svg': 'c37aff9f978c72c9ee2b87ef48da4fef3ce93b8f52e6ad50356270a29d27f876',
+  'docs/assets/brand/project-lockup.svg': '4484a6e4758a977c61069a6e9801a98312f4f9659039c733f6c6c2d22b78acc0',
+  'docs/assets/brand/readme-header.png': '0866d21631c3670c8d0175f12041ad2c0efb7f05b81574a8de416fffdcb9ca4e',
+  'site/favicon.svg': 'c37aff9f978c72c9ee2b87ef48da4fef3ce93b8f52e6ad50356270a29d27f876',
+  'site/favicon.ico': '2e2f07ad236cb667d55c2217e906fdaefde1a7733cad0409f7c865257f1790f5',
+  'site/apple-touch-icon.png': '56d46296c69749fe7cf18c72ff16411534eebe3fee84369b4033c80449140f30',
+  'site/og.png': '6b6acc88be7d462a090680e39762a5fcf6af7b93e1e9ea223352894e51f6f1ed',
+  'site/project-mark-color.svg': 'c37aff9f978c72c9ee2b87ef48da4fef3ce93b8f52e6ad50356270a29d27f876',
+  'site/project-mark-reversed.svg': '66ccdf0c912e78bacabeaffdb941e08babb31a22e9841428e01f30e4093fea99',
 }
 
 for (const [file, expected] of Object.entries(assets)) {
@@ -27,12 +27,12 @@ for (const [file, expected] of Object.entries(assets)) {
 }
 
 const checksumFile = 'docs/assets/brand/checksums.txt'
-assert.equal(await normalizedTextHash(checksumFile), '82b477d3da36c335e5c189ea0af1626d164eeaa43e061997fb846d09e7ed685d', 'vendored O04 checksums.txt must remain exact across line-ending policies')
+assert.equal(await normalizedTextHash(checksumFile), 'b8cab1b4a7565c9753652e3330e980b0fa97f76b13c01f0944acd78c3996e24a', 'vendored O04 checksums.txt must remain exact across line-ending policies')
 const checksums = await read(checksumFile)
 for (const [asset, expected] of Object.entries({
-  'glyph-color.svg': 'db727c53441d059a57d3de4b1201a3681b71b57b9e1854d32881617caa57d236',
-  'lockup-endorsed.svg': '513474611e05d422c63b15d0de3561435fc6b23b135ba1f7831c75bd7e634b5a',
-  'readme-header.png': '7abcef4d8a4a2d58cba15cec977d86a46ff96970700b9cce2ca47f67814ee76f',
+  'glyph-color.svg': 'c37aff9f978c72c9ee2b87ef48da4fef3ce93b8f52e6ad50356270a29d27f876',
+  'lockup-endorsed.svg': '4484a6e4758a977c61069a6e9801a98312f4f9659039c733f6c6c2d22b78acc0',
+  'readme-header.png': '0866d21631c3670c8d0175f12041ad2c0efb7f05b81574a8de416fffdcb9ca4e',
 })) {
   assert.match(checksums, new RegExp(`${expected}  ${asset}`), `checksums.txt must declare ${asset}`)
 }
