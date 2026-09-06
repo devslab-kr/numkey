@@ -48,8 +48,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify": "npm run check:brand && npm run typecheck && npm run test && npm run build",
-    "prepublishOnly": "npm run verify"
+    "verify": "npm run check:publisher && npm run check:brand && npm run typecheck && npm run test && npm run build",
+    "prepublishOnly": "npm run verify",
+    "build:publisher": "node scripts/build-publisher.mjs",
+    "check:publisher": "node scripts/build-publisher.mjs --check"
   },
   "peerDependencies": {
     "react": ">=18",
@@ -68,6 +70,7 @@
     }
   },
   "devDependencies": {
+    "@devslab/site-kit": "0.8.0",
     "@types/react": "^19.0.0",
     "jsdom": "^26.1.0",
     "solid-js": "^1.9.14",
