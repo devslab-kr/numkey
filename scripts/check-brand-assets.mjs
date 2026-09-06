@@ -64,7 +64,7 @@ assert.ok(darkGlow > lightGlow, 'dark atmosphere override must follow the light 
 assert.match(site.slice(darkGlow), /rgb\(6 182 212 \/ \.10\)/, 'dark atmosphere must cap cyan opacity at .10')
 
 const pkg = JSON.parse(await read('package.json'))
-assert.equal(pkg.scripts.verify, 'npm run check:brand && npm run typecheck && npm run test && npm run build', 'routine verification must include the brand check')
+assert.equal(pkg.scripts.verify, 'npm run check:publisher && npm run check:brand && npm run typecheck && npm run test && npm run build', 'routine verification must include publisher and brand checks')
 assert.equal(pkg.scripts.prepublishOnly, 'npm run verify', 'publishing must use routine verification')
 for (const workflow of ['.github/workflows/ci.yml', '.github/workflows/publish.yml']) {
   assert.match(await read(workflow), /npm run verify/, `${workflow} must use the routine verification gate`)
