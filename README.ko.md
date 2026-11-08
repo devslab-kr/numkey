@@ -92,6 +92,7 @@ numkey는 그 인풋을 한 번에 끝냅니다:
 | `data-numkey-point=","` | 필드에 표시되는 소수점 (기본 `.`) |
 | `data-numkey-locale` | 로케일에서 구분자 유도 — 아래 참조 |
 | `data-numkey-korean` | 실시간 한글 금액 병기 ("150만") — 아래 참조 |
+| `data-numkey-korean-style` | 병기 표기 방식: `hangul`("백오십만")·`formal`("일백오십만")·`hanja`("壹佰伍拾萬"), 기본은 혼합("150만") — 아래 참조 |
 | `data-numkey-korean-entry` | 만/억 축약 입력 허용 ("3만5천" → blur → "35,000") — 아래 참조 |
 | `data-numkey-name="amount"` | 정식 값을 전송하는 hidden 인풋 — 아래 참조 |
 | `data-numkey-min` / `data-numkey-max` | 최소/최대 — blur 시에만 적용 (입력 중 간섭 없음) |
@@ -165,6 +166,31 @@ toKorean('1500000')      // "150만"
 toKorean('927483041001') // "9,274억 8,304만 1,001"
 toKorean('100000001')    // "1억 1" — 0인 그룹은 생략
 ```
+
+#### 완전 한글·갖은자 표기 (`style`)
+
+혼합식 "150만"은 은행 UI용이고, 계약서·영수증·수표는 금액을 끝까지 풀어
+써야 합니다. `style`로 표기 방식을 고르고, 기본값은 그대로라 기존 필드는
+여전히 "150만"으로 나옵니다:
+
+```ts
+toKorean('1500000', { style: 'hangul' }) // "백오십만"    — 말하듯이: 앞의 일 생략(천오백, 만 오천 — 단 일억은 유지)
+toKorean('1500000', { style: 'formal' }) // "일백오십만"  — 계약서·영수증: 모든 자리에 일, 띄어쓰기 없음
+toKorean('1500000', { style: 'hanja' })  // "壹佰伍拾萬"  — 갖은자(위조 방지 숫자, 수표·어음·입금표)
+toKorean('15000',   { style: 'formal' }) // "일만오천"
+toKorean('0',       { style: 'hangul' }) // "영"
+```
+
+```html
+<input data-numkey data-numkey-korean data-numkey-korean-style="formal">
+<!-- 1500000 입력 시:  <span class="numkey-korean">일백오십만</span> -->
+```
+
+`formal`·`hanja`는 문서 금액이 한 덩어리여야 하므로 기본적으로 그룹 사이를
+띄우지 않습니다(`spacing: true`로 되돌릴 수 있고, `hangul`·혼합식은 기본
+띄움). "금 … 원정", "일금 … 원整" 같은 앞뒤 틀은 서식마다 달라 호출자가
+붙입니다. `fromKorean`은 `hangul`·`formal` 출력을 다시 읽을 수 있고, 갖은자
+입력은 범위 밖입니다.
 
 역방향도 됩니다 — 부동산·주식 앱에서 실제로 입력하는 축약형을 순수 함수로,
 또는 필드에서 직접:
@@ -307,7 +333,7 @@ const [amount, setAmount] = createSignal('') // 정식 값
 | `parse(display, opts?)` | 표시 값/붙여넣기 → 정식 값 `"1234567.89"` |
 | `format(canonical, opts?)` | 정식 값 → 표시 값 `"1,234,567.89"` |
 | `finalize(canonical)` | 입력 중간 상태 정리 (`"1234."` → `"1234"`) |
-| `toKorean(canonical, opts?)` | 한글 금액 병기 (`"1500000"` → `"150만"`) |
+| `toKorean(canonical, opts?)` | 한글 금액 병기 (`"1500000"` → `"150만"`; `style: 'hangul' \| 'formal' \| 'hanja'`로 완전 표기) |
 | `fromKorean(text)` | 만/억 축약 → 정식 값 (`"3만5천"` → `"35000"`) |
 
 ### DOM

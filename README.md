@@ -94,6 +94,7 @@ it does nothing:
 | `data-numkey-point=","` | decimal mark shown in the field (default `.`) |
 | `data-numkey-locale` | derive separators from a locale — see below |
 | `data-numkey-korean` | live Korean amount reading ("150만") — see below |
+| `data-numkey-korean-style` | how that reading is spelled: `hangul` ("백오십만"), `formal` ("일백오십만"), `hanja` ("壹佰伍拾萬"); default mixed ("150만") — see below |
 | `data-numkey-korean-entry` | accept Korean shorthand entry ("3만5천" → blur → "35,000") — see below |
 | `data-numkey-name="amount"` | hidden input posting the canonical value — see below |
 | `data-numkey-min` / `data-numkey-max` | bounds, applied on blur only (typing is never interrupted) |
@@ -168,6 +169,32 @@ toKorean('1500000')      // "150만"
 toKorean('927483041001') // "9,274억 8,304만 1,001"
 toKorean('100000001')    // "1억 1" — zero groups omitted
 ```
+
+#### Spelled-out readings (`style`)
+
+The mixed "150만" is what banking UIs show, but contracts, receipts, and bank
+paper need the amount written out in full. `style` picks the spelling; the
+default is unchanged, so existing fields keep rendering "150만":
+
+```ts
+toKorean('1500000', { style: 'hangul' }) // "백오십만"    — spoken: leading 일 dropped (천오백, 만 오천 — but 일억)
+toKorean('1500000', { style: 'formal' }) // "일백오십만"  — contracts/receipts: every 일 written, no spaces
+toKorean('1500000', { style: 'hanja' })  // "壹佰伍拾萬"  — 갖은자 anti-forgery numerals (수표·어음)
+toKorean('15000',   { style: 'formal' }) // "일만오천"
+toKorean('0',       { style: 'hangul' }) // "영"
+```
+
+```html
+<input data-numkey data-numkey-korean data-numkey-korean-style="formal">
+<!-- typing 1500000 renders:  <span class="numkey-korean">일백오십만</span> -->
+```
+
+`formal` and `hanja` default to no spaces between groups because a document
+amount is one unbroken token; pass `spacing: true` to opt back in (`hangul`
+and mixed space the groups by default). The frame around the number —
+"금 … 원정", "일금 … 원整" — differs per document and stays yours to add.
+`fromKorean` reads the `hangul` and `formal` output back; 갖은자 input is out
+of scope.
 
 And the inverse — accept the shorthand people actually type into
 부동산/주식 apps, either as a pure function or on the field itself:
@@ -310,7 +337,7 @@ const [amount, setAmount] = createSignal('') // canonical
 | `parse(display, opts?)` | display/paste mess → canonical `"1234567.89"` |
 | `format(canonical, opts?)` | canonical → display `"1,234,567.89"` |
 | `finalize(canonical)` | settle transient typing states (`"1234."` → `"1234"`) |
-| `toKorean(canonical, opts?)` | Korean amount reading (`"1500000"` → `"150만"`) |
+| `toKorean(canonical, opts?)` | Korean amount reading (`"1500000"` → `"150만"`; `style: 'hangul' \| 'formal' \| 'hanja'` spells it out) |
 | `fromKorean(text)` | Korean shorthand → canonical (`"3만5천"` → `"35000"`) |
 
 ### DOM

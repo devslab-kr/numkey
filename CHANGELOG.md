@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- **Spelled-out Korean readings** — `toKorean(value, { style })` and
+  `data-numkey-korean-style` add three spellings next to the existing mixed
+  "150만": `hangul` ("백오십만", spoken — leading 일 dropped), `formal`
+  ("일백오십만", contracts/receipts — every 일 written, no spaces), `hanja`
+  ("壹佰伍拾萬", 갖은자 anti-forgery numerals). The default is unchanged;
+  unknown style values fall back to it. New exported type `KoreanReadingStyle`.
+  / 한글 금액 병기에 완전 표기 3종 추가 — `hangul`(백오십만)·`formal`(일백오십만)·
+  `hanja`(壹佰伍拾萬). 기본값은 기존 "150만" 그대로.
+
 ## 0.6.1 (2026-08-08)
 
 Docs-only republish — no code changes. Runnable `examples/svelte` and

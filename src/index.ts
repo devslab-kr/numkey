@@ -9,7 +9,7 @@ export {
   resolveOptions,
   type NumkeyOptions
 } from './core'
-export { fromKorean, toKorean, type ToKoreanOptions } from './korean'
+export { fromKorean, toKorean, type KoreanReadingStyle, type ToKoreanOptions } from './korean'
 export {
   adjustDeleteCaret,
   applyToInput,
