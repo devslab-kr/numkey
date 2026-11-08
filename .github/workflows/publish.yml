@@ -32,7 +32,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24 # npm >= 11.5.1 is required for OIDC trusted publishing; Node 22 bundles npm 10
           cache: npm
           registry-url: https://registry.npmjs.org
 
