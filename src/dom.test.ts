@@ -429,3 +429,35 @@ describe('observe — auto-init', () => {
     stop()
   })
 })
+
+describe('data-numkey-korean-style — reading style for the hint', () => {
+  it('defaults to the mixed reading when the attribute is absent', () => {
+    const el = makeInput({ 'data-numkey': '', 'data-numkey-korean': '', value: '1500000' })
+    bind(el)
+    expect(el.nextElementSibling?.textContent).toBe('150만')
+  })
+
+  it('renders the chosen style and follows typing', () => {
+    const el = makeInput({
+      'data-numkey': '',
+      'data-numkey-korean': '',
+      'data-numkey-korean-style': 'formal',
+      value: '1500000'
+    })
+    bind(el)
+    const span = el.nextElementSibling as HTMLElement
+    expect(span.textContent).toBe('일백오십만')
+    el.value = '15000'
+    el.dispatchEvent(new Event('input'))
+    expect(span.textContent).toBe('일만오천')
+  })
+
+  it('hangul and hanja styles reach the hint too', () => {
+    const a = makeInput({ 'data-numkey': '', 'data-numkey-korean': '', 'data-numkey-korean-style': 'hangul', value: '15000' })
+    bind(a)
+    expect(a.nextElementSibling?.textContent).toBe('만 오천')
+    const b = makeInput({ 'data-numkey': '', 'data-numkey-korean': '', 'data-numkey-korean-style': 'hanja', value: '15000' })
+    bind(b)
+    expect(b.nextElementSibling?.textContent).toBe('壹萬伍仟')
+  })
+})

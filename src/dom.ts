@@ -8,6 +8,9 @@
  *   <input data-numkey data-numkey-korean>     — live "150만" reading in a
  *       generated <span class="numkey-korean"> after the input (or give the
  *       attribute a CSS selector to use an existing element)
+ *   <input data-numkey data-numkey-korean data-numkey-korean-style="formal">
+ *       — spell the reading out: hangul "백오십만" / formal "일백오십만" /
+ *       hanja "壹佰伍拾萬" (default mixed "150만")
  *   <input data-numkey data-numkey-name="amount"> — keep a generated hidden
  *       input named "amount" in sync with the CANONICAL value, so a classic
  *       form POST submits "1234567" while the field shows "1,234,567"
@@ -36,7 +39,7 @@ import {
   resolveOptions,
   type NumkeyOptions
 } from './core'
-import { fromKorean, KOREAN_NUMBER_CHARS, toKorean } from './korean'
+import { fromKorean, KOREAN_NUMBER_CHARS, toKorean, type KoreanReadingStyle } from './korean'
 
 const SELECTOR = 'input[data-numkey]'
 
@@ -261,6 +264,10 @@ export function bind(
   // data-numkey-korean: live "150만" reading. Empty value → generate a span
   // right after the input; a value is a selector for an existing element.
   const koreanAttr = el.getAttribute('data-numkey-korean')
+  // data-numkey-korean-style: mixed (default) | hangul | formal | hanja.
+  // Unknown values fall back to mixed inside toKorean — a typo degrades, never throws.
+  const koreanStyle = (el.getAttribute('data-numkey-korean-style') ??
+    undefined) as KoreanReadingStyle | undefined
   let koreanTarget: Element | null = null
   let koreanCreated = false
   if (koreanAttr !== null) {
@@ -288,7 +295,7 @@ export function bind(
   const syncExtras = (o: NumkeyOptions): void => {
     if (!koreanTarget && !hidden) return
     const canonical = canonicalOf(el.value, o)
-    if (koreanTarget) koreanTarget.textContent = toKorean(canonical)
+    if (koreanTarget) koreanTarget.textContent = toKorean(canonical, { style: koreanStyle })
     if (hidden) hidden.value = canonical
   }
 
