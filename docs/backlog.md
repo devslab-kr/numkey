@@ -45,6 +45,13 @@ it. Whichever way it goes, write it down and cover it.
 음수 병기 표기가 미정입니다. 지금은 `-987만 6,543`. "마이너스"가 맞는지는
 제품 판단이며, 정하고 문서화 + 테스트로 고정해야 합니다.
 
+Update 2026-11-08: the spelled-out styles added in v0.7.0 (`hangul` /
+`formal` / `hanja`) inherit the same bare `-` and their tests pin it
+(`-만 오천`, `-일백오십만`, `-壹萬`). The decision is still open; when it is
+made, all four styles move together.
+/ 0.7.0의 완전 표기 3종도 같은 맨 `-` 규칙을 물려받았고 테스트로 고정돼
+있습니다. 결정이 나면 네 표기가 함께 바뀝니다.
+
 ## Deliberately NOT doing
 
 - **Indian lakh grouping** — shipped in v0.6, no longer a backlog item.
